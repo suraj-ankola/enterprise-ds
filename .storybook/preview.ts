@@ -5,7 +5,7 @@ import '../src/app/globals.css';
 const preview: Preview = {
   globalTypes: {
     theme: {
-      name: 'Theme',
+      name: 'Color Mode',
       description: 'Light or dark mode',
       defaultValue: 'light',
       toolbar: {
@@ -17,17 +17,33 @@ const preview: Preview = {
         dynamicTitle: true,
       },
     },
+    product: {
+      name: 'Product Theme',
+      description: 'Brand theme per product',
+      defaultValue: 'compliance',
+      toolbar: {
+        icon: 'paintbrush',
+        items: [
+          { value: 'compliance', title: '🔵 Compliance' },
+          { value: 'itops',      title: '🟣 IT Ops'     },
+          { value: 'analytics',  title: '🩵 Analytics'  },
+        ],
+        dynamicTitle: true,
+      },
+    },
   },
 
   decorators: [
     (Story: StoryFn, context) => {
-      const isDark = context.globals['theme'] === 'dark';
+      const isDark   = context.globals['theme']   === 'dark';
+      const product  = (context.globals['product'] as string) ?? 'compliance';
 
-      // Apply / remove .dark on the preview <html> element
+      // Apply dark mode class and product theme attribute to <html>
       document.documentElement.classList.toggle('dark', isDark);
+      document.documentElement.setAttribute('data-theme', product);
 
-      // Keep the Storybook canvas background in sync
-      document.body.style.backgroundColor = isDark ? '#0f172a' : '#f8fafc';
+      // Sync canvas background — use CSS token so it follows the active theme
+      document.body.style.backgroundColor = 'var(--ds-bg-base)';
       document.body.style.padding = '24px';
 
       return React.createElement(Story as React.ComponentType);
@@ -35,11 +51,11 @@ const preview: Preview = {
   ],
 
   parameters: {
-    backgrounds: { disable: true }, // replaced by our Theme toolbar toggle
+    backgrounds: { disable: true },
     controls: {
       matchers: {
         color: /(background|color)$/i,
-        date: /Date$/i,
+        date:  /Date$/i,
       },
     },
     a11y: { test: 'todo' },

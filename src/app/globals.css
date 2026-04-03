@@ -1,83 +1,535 @@
 @import "tailwindcss";
 
-/* ─── Dark mode — class based (.dark on <html>) ────────────────────────────── */
+/* ============================================================
+   ENTERPRISE DESIGN SYSTEM — GLOBAL TOKENS
+   ============================================================
+   Architecture:
+     Primitive tokens  → raw values, never used directly in components
+     Semantic tokens   → map primitives to meaning (light/dark aware)
+     Brand tokens      → per-product accent (data-theme attribute)
+
+   Rules:
+     1. Components ONLY use --ds-* semantic tokens
+     2. Never hardcode hex values in components
+     3. New tokens go here first, then into components
+     4. All changes must be reflected in tokens.ts
+   ============================================================ */
+
+
+/* ─── DARK MODE STRATEGY ────────────────────────────────────────────────────
+   Class-based, not media-query. Allows user-controlled toggle.
+   Usage: add class="dark" to <html>
+   ────────────────────────────────────────────────────────────────────────── */
 @variant dark (&:where(.dark, .dark *));
 
-/* ─── Brand Palette (raw scale) ─────────────────────────────────────────────── */
+
+/* ─── PRIMITIVE PALETTE (@theme → Tailwind utilities) ───────────────────────
+   These become bg-*, text-*, border-* Tailwind utilities.
+   Do NOT use these directly in components — use semantic tokens below.
+   ────────────────────────────────────────────────────────────────────────── */
 @theme {
-  --color-brand-50:  #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-200: #bfdbfe;
-  --color-brand-300: #93c5fd;
-  --color-brand-400: #60a5fa;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
-  --color-brand-800: #1e40af;
-  --color-brand-900: #1e3a8a;
 
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, 'SFMono-Regular', monospace;
+  /* ── Blue (default brand) ─────────────────────────────────────────────── */
+  --color-blue-50:  #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-900: #1e3a8a;
+
+  /* ── Violet (IT Ops brand) ────────────────────────────────────────────── */
+  --color-violet-50:  #f5f3ff;
+  --color-violet-100: #ede9fe;
+  --color-violet-200: #ddd6fe;
+  --color-violet-300: #c4b5fd;
+  --color-violet-400: #a78bfa;
+  --color-violet-500: #8b5cf6;
+  --color-violet-600: #7c3aed;
+  --color-violet-700: #6d28d9;
+  --color-violet-800: #5b21b6;
+  --color-violet-900: #4c1d95;
+
+  /* ── Cyan (Analytics brand) ───────────────────────────────────────────── */
+  --color-cyan-50:  #ecfeff;
+  --color-cyan-100: #cffafe;
+  --color-cyan-200: #a5f3fc;
+  --color-cyan-300: #67e8f9;
+  --color-cyan-400: #22d3ee;
+  --color-cyan-500: #06b6d4;
+  --color-cyan-600: #0891b2;
+  --color-cyan-700: #0e7490;
+  --color-cyan-800: #155e75;
+  --color-cyan-900: #164e63;
+
+  /* ── Neutral (Slate) ──────────────────────────────────────────────────── */
+  --color-neutral-50:  #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-400: #94a3b8;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #475569;
+  --color-neutral-700: #334155;
+  --color-neutral-800: #1e293b;
+  --color-neutral-900: #0f172a;
+
+  /* ── Status primitives ────────────────────────────────────────────────── */
+  --color-green-50:  #f0fdf4;
+  --color-green-100: #dcfce7;
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+  --color-green-900: #14532d;
+
+  --color-yellow-50:  #fefce8;
+  --color-yellow-100: #fef9c3;
+  --color-yellow-500: #eab308;
+  --color-yellow-600: #ca8a04;
+  --color-yellow-900: #713f12;
+
+  --color-amber-100: #fef3c7;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+  --color-amber-900: #78350f;
+
+  --color-red-50:  #fff1f2;
+  --color-red-100: #fee2e2;
+  --color-red-400: #f87171;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-red-900: #7f1d1d;
+
+  /* ── Typography ───────────────────────────────────────────────────────── */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+
+  /* ── Type scale ───────────────────────────────────────────────────────── */
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.875rem;
+  --text-4xl:  2.25rem;
+  --text-5xl:  3rem;
+
+  /* ── Font weights ─────────────────────────────────────────────────────── */
+  --font-weight-regular:  400;
+  --font-weight-medium:   500;
+  --font-weight-semibold: 600;
+  --font-weight-bold:     700;
+
+  /* ── Letter spacing ───────────────────────────────────────────────────── */
+  --tracking-tight:   -0.025em;
+  --tracking-normal:   0em;
+  --tracking-wide:     0.025em;
+  --tracking-wider:    0.05em;
+  --tracking-widest:   0.1em;
+
+  /* ── Line heights ─────────────────────────────────────────────────────── */
+  --leading-none:    1;
+  --leading-tight:   1.25;
+  --leading-snug:    1.375;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose:   2;
+
+  /* ── Border Radius ────────────────────────────────────────────────────── */
+  --radius-none: 0px;
+  --radius-xs:   2px;
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-xl:   12px;
+  --radius-2xl:  16px;
+  --radius-3xl:  24px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ──────────────────────────────────────────────────────────── */
+  --shadow-none: 0 0 #0000;
+  --shadow-xs:   0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm:   0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md:   0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg:   0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl:   0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl:  0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* ── Spacing (8pt grid — base unit: 8px) ──────────────────────────────
+     Full steps: 8, 16, 24, 32, 40, 48, 64, 80, 96...
+     Half steps: 4, 12, 20, 28, 36...  (for tight/icon spacing)
+     Quarter:    2px (borders, fine-tune)
+     In Tailwind: spacing-1=4px, spacing-2=8px (1 unit), spacing-4=16px (2 units)
+     ───────────────────────────────────────────────────────────────────── */
+
+  /* ── Breakpoints ──────────────────────────────────────────────────────── */
+  --breakpoint-sm:   640px;   /* Large phones (landscape)     */
+  --breakpoint-md:   768px;   /* Tablets                       */
+  --breakpoint-lg:   1024px;  /* Small laptops                 */
+  --breakpoint-xl:   1280px;  /* Desktops (primary target)     */
+  --breakpoint-2xl:  1536px;  /* Large monitors                */
+  --breakpoint-3xl:  1920px;  /* Ultrawide / 1920+ (16-col)    */
 }
 
-/* ─── Semantic Tokens — Light (default) ─────────────────────────────────────── */
+
+/* ─── SEMANTIC TOKENS — LIGHT MODE ─────────────────────────────────────────
+   All components MUST use these. Never use primitive colors directly.
+   ────────────────────────────────────────────────────────────────────────── */
 :root {
-  /* Backgrounds */
-  --ds-bg-base:    #f8fafc;   /* page canvas          */
-  --ds-bg-surface: #ffffff;   /* cards, panels        */
-  --ds-bg-raised:  #ffffff;   /* modals, dropdowns    */
-  --ds-bg-subtle:  #f1f5f9;   /* hover fills, tags    */
 
-  /* Text */
-  --ds-text-primary:   #0f172a;
-  --ds-text-secondary: #475569;
-  --ds-text-muted:     #94a3b8;
-  --ds-text-disabled:  #cbd5e1;
-  --ds-text-on-brand:  #ffffff;
+  /* ── Backgrounds ──────────────────────────────────────────────────────── */
+  --ds-bg-base:      #f8fafc;  /* Page canvas                   */
+  --ds-bg-surface:   #ffffff;  /* Cards, panels, sidebars        */
+  --ds-bg-raised:    #ffffff;  /* Modals, popovers, dropdowns    */
+  --ds-bg-subtle:    #f1f5f9;  /* Hover fills, wells, tags       */
+  --ds-bg-inverse:   #0f172a;  /* Inverted surfaces              */
+  --ds-bg-overlay:   rgb(15 23 42 / 0.5); /* Backdrop overlays  */
 
-  /* Borders */
-  --ds-border-base:   #e2e8f0;
-  --ds-border-strong: #cbd5e1;
-  --ds-border-focus:  #3b82f6;
+  /* ── Text ─────────────────────────────────────────────────────────────── */
+  --ds-text-primary:    #0f172a;  /* Main headings, body text  */
+  --ds-text-secondary:  #475569;  /* Supporting, subtitles     */
+  --ds-text-muted:      #94a3b8;  /* Placeholders, hints       */
+  --ds-text-disabled:   #cbd5e1;  /* Disabled labels           */
+  --ds-text-inverse:    #f8fafc;  /* Text on dark surfaces     */
+  --ds-text-on-brand:   #ffffff;  /* Text on brand-colored bg  */
+  --ds-text-link:       #2563eb;  /* Links                     */
+  --ds-text-link-hover: #1d4ed8;  /* Link hover                */
 
-  /* Status */
-  --ds-success-bg: #dcfce7; --ds-success-text: #15803d;
-  --ds-warning-bg: #fef3c7; --ds-warning-text: #b45309;
-  --ds-danger-bg:  #fee2e2; --ds-danger-text:  #dc2626;
-  --ds-info-bg:    #e0f2fe; --ds-info-text:    #0284c7;
+  /* ── Borders ──────────────────────────────────────────────────────────── */
+  --ds-border-base:    #e2e8f0;  /* Default dividers, inputs  */
+  --ds-border-strong:  #cbd5e1;  /* Emphasized borders        */
+  --ds-border-focus:   #3b82f6;  /* Focus ring color          */
+  --ds-border-inverse: #334155;  /* Borders on dark surfaces  */
+
+  /* ── Status — Success ─────────────────────────────────────────────────── */
+  --ds-success-bg:     #dcfce7;
+  --ds-success-bg-subtle: #f0fdf4;
+  --ds-success-text:   #15803d;
+  --ds-success-border: #86efac;
+  --ds-success-icon:   #16a34a;
+
+  /* ── Status — Warning ─────────────────────────────────────────────────── */
+  --ds-warning-bg:     #fef3c7;
+  --ds-warning-bg-subtle: #fefce8;
+  --ds-warning-text:   #b45309;
+  --ds-warning-border: #fcd34d;
+  --ds-warning-icon:   #d97706;
+
+  /* ── Status — Danger ─────────────────────────────────────────────────── */
+  --ds-danger-bg:      #fee2e2;
+  --ds-danger-bg-subtle: #fff1f2;
+  --ds-danger-text:    #dc2626;
+  --ds-danger-border:  #fca5a5;
+  --ds-danger-icon:    #dc2626;
+
+  /* ── Status — Info ───────────────────────────────────────────────────── */
+  --ds-info-bg:        #e0f2fe;
+  --ds-info-bg-subtle: #f0f9ff;
+  --ds-info-text:      #0284c7;
+  --ds-info-border:    #7dd3fc;
+  --ds-info-icon:      #0284c7;
+
+  /* ── Brand (default = Compliance / Blue) ──────────────────────────────
+     Override via [data-theme="itops"] or [data-theme="analytics"]
+     ───────────────────────────────────────────────────────────────────── */
+  --ds-brand-50:      #eff6ff;
+  --ds-brand-100:     #dbeafe;
+  --ds-brand-200:     #bfdbfe;
+  --ds-brand-300:     #93c5fd;
+  --ds-brand-400:     #60a5fa;
+  --ds-brand-500:     #3b82f6;
+  --ds-brand-600:     #2563eb;   /* ← primary action */
+  --ds-brand-700:     #1d4ed8;
+  --ds-brand-800:     #1e40af;
+  --ds-brand-900:     #1e3a8a;
+  --ds-brand-text:    #ffffff;   /* text on brand bg */
+  --ds-brand-focus:   #3b82f6;   /* focus ring */
+
+  /* ── Opacity ──────────────────────────────────────────────────────────── */
+  --ds-opacity-disabled: 0.5;
+  --ds-opacity-overlay:  0.5;
+  --ds-opacity-muted:    0.7;
+
+  /* ── Z-index ──────────────────────────────────────────────────────────── */
+  --ds-z-base:     0;
+  --ds-z-raised:   10;
+  --ds-z-dropdown: 100;
+  --ds-z-sticky:   200;
+  --ds-z-overlay:  300;
+  --ds-z-modal:    400;
+  --ds-z-toast:    500;
+  --ds-z-tooltip:  600;
+
+  /* ── Motion ───────────────────────────────────────────────────────────── */
+  --ds-duration-instant: 50ms;
+  --ds-duration-fast:    100ms;
+  --ds-duration-base:    150ms;
+  --ds-duration-slow:    250ms;
+  --ds-duration-slower:  400ms;
+  --ds-duration-page:    300ms;
+
+  --ds-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-in:      cubic-bezier(0.4, 0, 1, 1);
+  --ds-ease-out:     cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ds-ease-bounce:  cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ── Layout Grid ─────────────────────────────────────────────────────── */
+  --ds-grid-cols-mobile:  4;
+  --ds-grid-cols-tablet:  8;
+  --ds-grid-cols-desktop: 12;
+  --ds-grid-cols-wide:    16;
+
+  --ds-grid-gutter-mobile:  16px;   /* 2 units */
+  --ds-grid-gutter-tablet:  24px;   /* 3 units */
+  --ds-grid-gutter-desktop: 32px;   /* 4 units */
+  --ds-grid-gutter-wide:    40px;   /* 5 units */
+
+  --ds-grid-margin-mobile:  16px;
+  --ds-grid-margin-tablet:  32px;
+  --ds-grid-margin-desktop: 48px;
+  --ds-grid-margin-wide:    80px;
+
+  /* Container max widths */
+  --ds-container-sm:   640px;
+  --ds-container-md:   768px;
+  --ds-container-lg:   1024px;
+  --ds-container-xl:   1280px;
+  --ds-container-2xl:  1536px;
+  --ds-container-full: 100%;
+
+  /* ── Focus ring ───────────────────────────────────────────────────────── */
+  --ds-focus-ring-color:  var(--ds-brand-focus);
+  --ds-focus-ring-width:  2px;
+  --ds-focus-ring-offset: 2px;
+  --ds-focus-ring-offset-color: var(--ds-bg-surface);
 }
 
-/* ─── Semantic Tokens — Dark ─────────────────────────────────────────────────── */
+
+/* ─── SEMANTIC TOKENS — DARK MODE ───────────────────────────────────────────
+   ────────────────────────────────────────────────────────────────────────── */
 .dark {
   /* Backgrounds */
-  --ds-bg-base:    #0f172a;   /* slate-900             */
-  --ds-bg-surface: #1e293b;   /* slate-800             */
-  --ds-bg-raised:  #334155;   /* slate-700             */
-  --ds-bg-subtle:  #334155;   /* slate-700             */
+  --ds-bg-base:    #0f172a;
+  --ds-bg-surface: #1e293b;
+  --ds-bg-raised:  #334155;
+  --ds-bg-subtle:  #1e293b;
+  --ds-bg-inverse: #f8fafc;
+  --ds-bg-overlay: rgb(0 0 0 / 0.6);
 
   /* Text */
-  --ds-text-primary:   #f1f5f9;
-  --ds-text-secondary: #94a3b8;
-  --ds-text-muted:     #64748b;
-  --ds-text-disabled:  #475569;
-  --ds-text-on-brand:  #ffffff;
+  --ds-text-primary:    #f1f5f9;
+  --ds-text-secondary:  #94a3b8;
+  --ds-text-muted:      #64748b;
+  --ds-text-disabled:   #475569;
+  --ds-text-inverse:    #0f172a;
+  --ds-text-on-brand:   #ffffff;
+  --ds-text-link:       #60a5fa;
+  --ds-text-link-hover: #93c5fd;
 
   /* Borders */
-  --ds-border-base:   #334155;
-  --ds-border-strong: #475569;
-  --ds-border-focus:  #60a5fa;
+  --ds-border-base:    #334155;
+  --ds-border-strong:  #475569;
+  --ds-border-focus:   #60a5fa;
+  --ds-border-inverse: #e2e8f0;
 
   /* Status */
-  --ds-success-bg: #052e16; --ds-success-text: #4ade80;
-  --ds-warning-bg: #451a03; --ds-warning-text: #fbbf24;
-  --ds-danger-bg:  #450a0a; --ds-danger-text:  #f87171;
-  --ds-info-bg:    #082f49; --ds-info-text:    #38bdf8;
+  --ds-success-bg:      #052e16;
+  --ds-success-bg-subtle: #052e16;
+  --ds-success-text:    #4ade80;
+  --ds-success-border:  #166534;
+  --ds-success-icon:    #4ade80;
+
+  --ds-warning-bg:      #451a03;
+  --ds-warning-bg-subtle: #451a03;
+  --ds-warning-text:    #fbbf24;
+  --ds-warning-border:  #92400e;
+  --ds-warning-icon:    #fbbf24;
+
+  --ds-danger-bg:       #450a0a;
+  --ds-danger-bg-subtle: #450a0a;
+  --ds-danger-text:     #f87171;
+  --ds-danger-border:   #991b1b;
+  --ds-danger-icon:     #f87171;
+
+  --ds-info-bg:         #082f49;
+  --ds-info-bg-subtle:  #082f49;
+  --ds-info-text:       #38bdf8;
+  --ds-info-border:     #075985;
+  --ds-info-icon:       #38bdf8;
+
+  /* Brand default — dark mode adjustments */
+  --ds-brand-500:   #60a5fa;
+  --ds-brand-600:   #3b82f6;
+  --ds-brand-focus: #60a5fa;
+
+  /* Focus ring offset matches dark surface */
+  --ds-focus-ring-offset-color: #1e293b;
 }
 
-/* ─── Base styles ────────────────────────────────────────────────────────────── */
+
+/* ─── BRAND THEMES ───────────────────────────────────────────────────────────
+   Applied via data-theme="compliance|itops|analytics" on <html>
+   Each overrides only --ds-brand-* tokens.
+   All other semantic tokens remain unchanged → shared system.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Compliance Risk Platform — Blue (trust, security, authority) */
+[data-theme="compliance"],
+[data-theme="compliance"] * {
+  --ds-brand-50:    #eff6ff;
+  --ds-brand-100:   #dbeafe;
+  --ds-brand-200:   #bfdbfe;
+  --ds-brand-300:   #93c5fd;
+  --ds-brand-400:   #60a5fa;
+  --ds-brand-500:   #3b82f6;
+  --ds-brand-600:   #2563eb;
+  --ds-brand-700:   #1d4ed8;
+  --ds-brand-800:   #1e40af;
+  --ds-brand-900:   #1e3a8a;
+  --ds-brand-text:  #ffffff;
+  --ds-brand-focus: #3b82f6;
+  --ds-text-link:        #2563eb;
+  --ds-text-link-hover:  #1d4ed8;
+  --ds-border-focus:     #3b82f6;
+}
+
+/* IT Ops AI Copilot — Violet (technical, modern, intelligent) */
+[data-theme="itops"],
+[data-theme="itops"] * {
+  --ds-brand-50:    #f5f3ff;
+  --ds-brand-100:   #ede9fe;
+  --ds-brand-200:   #ddd6fe;
+  --ds-brand-300:   #c4b5fd;
+  --ds-brand-400:   #a78bfa;
+  --ds-brand-500:   #8b5cf6;
+  --ds-brand-600:   #7c3aed;
+  --ds-brand-700:   #6d28d9;
+  --ds-brand-800:   #5b21b6;
+  --ds-brand-900:   #4c1d95;
+  --ds-brand-text:  #ffffff;
+  --ds-brand-focus: #8b5cf6;
+  --ds-text-link:        #7c3aed;
+  --ds-text-link-hover:  #6d28d9;
+  --ds-border-focus:     #8b5cf6;
+}
+
+/* Self-Serve Analytics — Cyan (data, clarity, insight) */
+[data-theme="analytics"],
+[data-theme="analytics"] * {
+  --ds-brand-50:    #ecfeff;
+  --ds-brand-100:   #cffafe;
+  --ds-brand-200:   #a5f3fc;
+  --ds-brand-300:   #67e8f9;
+  --ds-brand-400:   #22d3ee;
+  --ds-brand-500:   #06b6d4;
+  --ds-brand-600:   #0891b2;
+  --ds-brand-700:   #0e7490;
+  --ds-brand-800:   #155e75;
+  --ds-brand-900:   #164e63;
+  --ds-brand-text:  #ffffff;
+  --ds-brand-focus: #06b6d4;
+  --ds-text-link:        #0891b2;
+  --ds-text-link-hover:  #0e7490;
+  --ds-border-focus:     #06b6d4;
+}
+
+/* Dark + theme combinations */
+.dark[data-theme="compliance"],
+.dark [data-theme="compliance"],
+.dark[data-theme="compliance"] * {
+  --ds-brand-500:   #60a5fa;
+  --ds-brand-600:   #3b82f6;
+  --ds-brand-focus: #60a5fa;
+  --ds-text-link:   #60a5fa;
+  --ds-border-focus: #60a5fa;
+}
+.dark[data-theme="itops"],
+.dark [data-theme="itops"],
+.dark[data-theme="itops"] * {
+  --ds-brand-500:   #a78bfa;
+  --ds-brand-600:   #8b5cf6;
+  --ds-brand-focus: #a78bfa;
+  --ds-text-link:   #a78bfa;
+  --ds-border-focus: #a78bfa;
+}
+.dark[data-theme="analytics"],
+.dark [data-theme="analytics"],
+.dark[data-theme="analytics"] * {
+  --ds-brand-500:   #22d3ee;
+  --ds-brand-600:   #06b6d4;
+  --ds-brand-focus: #22d3ee;
+  --ds-text-link:   #22d3ee;
+  --ds-border-focus: #22d3ee;
+}
+
+
+/* ─── FOCUS RING UTILITY ─────────────────────────────────────────────────────
+   Apply .ds-focus-ring to interactive elements.
+   Automatically inherits brand theme focus color.
+   ────────────────────────────────────────────────────────────────────────── */
+.ds-focus-ring {
+  outline: none;
+}
+.ds-focus-ring:focus-visible {
+  outline: var(--ds-focus-ring-width) solid var(--ds-focus-ring-color);
+  outline-offset: var(--ds-focus-ring-offset);
+}
+/* legacy alias */
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: var(--ds-focus-ring-width) solid var(--ds-focus-ring-color);
+  outline-offset: var(--ds-focus-ring-offset);
+}
+
+
+/* ─── LAYOUT UTILITIES ───────────────────────────────────────────────────────
+   ────────────────────────────────────────────────────────────────────────── */
+.ds-container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--ds-grid-margin-mobile);
+}
+@media (min-width: 768px)  { .ds-container { padding-inline: var(--ds-grid-margin-tablet);  } }
+@media (min-width: 1280px) { .ds-container { padding-inline: var(--ds-grid-margin-desktop); max-width: var(--ds-container-xl);  } }
+@media (min-width: 1920px) { .ds-container { padding-inline: var(--ds-grid-margin-wide);    max-width: var(--ds-container-2xl); } }
+
+.ds-container-fluid {
+  width: 100%;
+  padding-inline: var(--ds-grid-margin-mobile);
+}
+@media (min-width: 768px)  { .ds-container-fluid { padding-inline: var(--ds-grid-margin-tablet);  } }
+@media (min-width: 1280px) { .ds-container-fluid { padding-inline: var(--ds-grid-margin-desktop); } }
+@media (min-width: 1920px) { .ds-container-fluid { padding-inline: var(--ds-grid-margin-wide);    } }
+
+
+/* ─── BASE STYLES ────────────────────────────────────────────────────────────
+   ────────────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
   background-color: var(--ds-bg-base);
   color: var(--ds-text-primary);
   font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
