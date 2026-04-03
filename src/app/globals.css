@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+/* ─── Dark mode — class based (.dark on <html>) ────────────────────────────── */
+@variant dark (&:where(.dark, .dark *));
+
+/* ─── Brand Palette (raw scale) ─────────────────────────────────────────────── */
+@theme {
+  --color-brand-50:  #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #60a5fa;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-800: #1e40af;
+  --color-brand-900: #1e3a8a;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', monospace;
+}
+
+/* ─── Semantic Tokens — Light (default) ─────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --ds-bg-base:    #f8fafc;   /* page canvas          */
+  --ds-bg-surface: #ffffff;   /* cards, panels        */
+  --ds-bg-raised:  #ffffff;   /* modals, dropdowns    */
+  --ds-bg-subtle:  #f1f5f9;   /* hover fills, tags    */
+
+  /* Text */
+  --ds-text-primary:   #0f172a;
+  --ds-text-secondary: #475569;
+  --ds-text-muted:     #94a3b8;
+  --ds-text-disabled:  #cbd5e1;
+  --ds-text-on-brand:  #ffffff;
+
+  /* Borders */
+  --ds-border-base:   #e2e8f0;
+  --ds-border-strong: #cbd5e1;
+  --ds-border-focus:  #3b82f6;
+
+  /* Status */
+  --ds-success-bg: #dcfce7; --ds-success-text: #15803d;
+  --ds-warning-bg: #fef3c7; --ds-warning-text: #b45309;
+  --ds-danger-bg:  #fee2e2; --ds-danger-text:  #dc2626;
+  --ds-info-bg:    #e0f2fe; --ds-info-text:    #0284c7;
+}
+
+/* ─── Semantic Tokens — Dark ─────────────────────────────────────────────────── */
+.dark {
+  /* Backgrounds */
+  --ds-bg-base:    #0f172a;   /* slate-900             */
+  --ds-bg-surface: #1e293b;   /* slate-800             */
+  --ds-bg-raised:  #334155;   /* slate-700             */
+  --ds-bg-subtle:  #334155;   /* slate-700             */
+
+  /* Text */
+  --ds-text-primary:   #f1f5f9;
+  --ds-text-secondary: #94a3b8;
+  --ds-text-muted:     #64748b;
+  --ds-text-disabled:  #475569;
+  --ds-text-on-brand:  #ffffff;
+
+  /* Borders */
+  --ds-border-base:   #334155;
+  --ds-border-strong: #475569;
+  --ds-border-focus:  #60a5fa;
+
+  /* Status */
+  --ds-success-bg: #052e16; --ds-success-text: #4ade80;
+  --ds-warning-bg: #451a03; --ds-warning-text: #fbbf24;
+  --ds-danger-bg:  #450a0a; --ds-danger-text:  #f87171;
+  --ds-info-bg:    #082f49; --ds-info-text:    #38bdf8;
+}
+
+/* ─── Base styles ────────────────────────────────────────────────────────────── */
+body {
+  background-color: var(--ds-bg-base);
+  color: var(--ds-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
