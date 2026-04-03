@@ -260,8 +260,8 @@ async viteFinal(config) {
 | Input | ✅ | ✅ | ✅ 16 stories | ✅ | ✅ |
 | Icons (Gallery) | ✅ | ✅ | ✅ Searchable | ✅ | ✅ |
 | Card | ✅ | ✅ | ✅ 10 stories | ✅ | ✅ |
-| Badge | 🔜 | — | — | — | — |
-| Select / Dropdown | 🔜 | — | — | — |
+| Badge | ✅ | ✅ | ✅ 8 stories | ✅ | ✅ |
+| Select / Dropdown | ✅ | ✅ | ✅ 7 stories | ✅ | ✅ |
 | Table | 🔜 | — | — | — |
 | Modal | 🔜 | — | — | — |
 | AI Chat UI | 🔜 | — | — | — |
@@ -602,3 +602,337 @@ These were identified in the audit as informational — they don't block current
 ---
 
 *Last updated: April 3, 2026 — Audit complete. Ready to build Badge component.*
+
+---
+
+## Session 11 — Badge Component
+
+**Date:** April 3, 2026
+**Time:** ~1 hour
+**Completed checklist:** ✅ tokens → ✅ component → ✅ stories → ✅ type-check clean
+
+### What Was Built
+
+`Badge` — a display label for status, categories, counts, and filter chips.
+
+**API:**
+```tsx
+<Badge
+  variant?    = 'neutral' | 'brand' | 'success' | 'warning' | 'danger' | 'info'
+  appearance? = 'subtle' | 'outline' | 'solid'
+  size?       = 'sm' | 'md' | 'lg'
+  dot?        // colored indicator dot (omitted when icon is present)
+  icon?       // left React node icon slot
+  onDismiss?  // adds × button, makes badge dismissible
+  className?
+>
+  Label
+</Badge>
+```
+
+**Stories:**
+- `Playground` — interactive controls
+- `AllVariants` — all 6 variants × 3 appearances
+- `Appearances × Variants` — full matrix grid
+- `Sizes` — sm/md/lg with multiple variants
+- `WithDot` — dot indicator across variants and appearances
+- `WithIcon` — left icon slot, all three appearances
+- `Dismissible` — live dismiss demo with reset
+- `Real-world Patterns` — Compliance (vendor status), IT Ops (incident severity), Analytics (filter chips), notification counts/bubbles
+
+### Key Decisions
+
+**1. Three appearances instead of two**
+Most design systems offer `solid` (filled) and `outlined`. Added `subtle` (tinted bg, colored text) as the default because it's the right choice for status indicators in data-dense enterprise UIs — less visual weight than solid, more readable than outline-only.
+
+**2. New solid-fill tokens required**
+`solid` appearance needs sufficient contrast in dark mode. Status icon tokens (`--ds-success-icon`, etc.) are light in dark mode (#4ade80, #fbbf24), so using `text-white` on them would fail WCAG AA. Solution: added `--ds-*-solid-bg` + `--ds-*-solid-text` token pairs to `globals.css` with light/dark values that guarantee ≥ 4.5:1 contrast in both modes. All 8 combinations verified and documented in `tokens.ts accessibility.verified`.
+
+**3. Dot vs. icon — explicit priority**
+When both `dot` and `icon` are provided, `icon` wins. Prevents double-prefix visual clutter. Documented in JSDoc.
+
+**4. Dismissible as a prop not a variant**
+`onDismiss` keeps the dismiss behaviour as an opt-in prop rather than a separate variant, consistent with how `loading` works on Button. The × button stops event propagation so dismissing doesn't trigger parent click handlers (important for dismissible badges inside clickable cards).
+
+**5. Notification count pattern**
+Badge doesn't have a special `count` variant — instead the real-world story shows using `solid sm` with `className="absolute -top-1.5 -right-1.5 min-w-[1.25rem] justify-center"` for the notification bubble pattern. This is composition, not a special API.
+
+### Tokens Added
+
+In `globals.css` (`:root` and `.dark`):
+```
+--ds-success-solid-bg / --ds-success-solid-text
+--ds-warning-solid-bg / --ds-warning-solid-text
+--ds-danger-solid-bg  / --ds-danger-solid-text
+--ds-info-solid-bg    / --ds-info-solid-text
+```
+
+In `tokens.ts accessibility.verified`: 8 new WCAG-verified contrast pairs (4 light + 4 dark).*Last updated: April 3, 2026 — Badge complete. Next: Select / Dropdown or Table.*
+
+---
+
+## Session 12 — Select / Dropdown Component
+
+**Date:** April 3, 2026
+**Completed checklist:** ✅ component → ✅ stories → ✅ type-check clean
+
+### What Was Built
+
+`Select` — a fully accessible custom dropdown (select-only combobox pattern, ARIA APG compliant).
+
+**API:**
+```tsx
+<Select
+  options        // SelectOption[] — { value, label, disabled?, group? }
+  value?         // controlled value
+  defaultValue?  // uncontrolled initial value
+  onChange?      // (value: string) => void
+  placeholder?
+  label?
+  helperText?
+  errorMessage?  // sets status='error', shows message below trigger
+  status?        // 'default' | 'error' | 'success'
+  size?          // 'sm' | 'md' | 'lg'
+  disabled?
+  fullWidth?
+  searchable?    // renders a search input at top of dropdown
+  className?
+  id?
+/>
+```
+
+**Stories:**
+- `Playground` — interactive controls
+- `Sizes` — sm/md/lg
+- `StatusStates` — default / error / success / disabled
+- `Searchable` — live filter with 27 countries
+- `OptionGroups` — grouped time ranges
+- `Controlled` — controlled mode with external state buttons
+- `All Sizes × Status` — full grid
+- `ProjectPatterns` — Compliance filter bar, IT Ops incident form, Analytics query builder
+
+### Key Decisions
+
+**1. Custom dropdown, not native `<select>`**
+Native `<select>` is notoriously difficult to style consistently across browsers and OS. All enterprise design systems (Material, Radix, Headless UI, Carbon) use custom dropdowns. The tradeoff is implementing keyboard accessibility ourselves — done here following the ARIA APG Select-Only Combobox pattern.
+
+**2. ARIA: `role="combobox"` on trigger `<button>`**
+The ARIA APG pattern places `role="combobox"` on the input-like trigger. Using a native `<button>` gives us free keyboard activation (Enter/Space), focus management, and disabled state handling without extra event wiring.
+
+Full ARIA chain:
+- Trigger: `role="combobox"` + `aria-expanded` + `aria-haspopup="listbox"` + `aria-controls` + `aria-activedescendant`
+- List: `role="listbox"`
+- Options: `role="option"` + `aria-selected` + `aria-disabled`
+
+**3. Keyboard navigation**
+- Non-searchable: trigger keeps focus, handles all keyboard events (Arrow, Enter, Space, Escape, Home, End, Tab)
+- Searchable: focus moves to search input on open; search input handles all keyboard events
+- Tab always closes without selecting (natural focus flow)
+- Home/End jump to first/last enabled option
+
+**4. Searchable: search input inside dropdown, not inline trigger**
+Two approaches exist: (a) trigger becomes an input when open, (b) separate search input at top of dropdown. Chose (b) because the trigger always shows the selected value clearly, and the search context is visually separate. This matches Radix Select + react-select patterns.
+
+**5. Option groups via `group` property on SelectOption**
+Group headers are rendered as non-interactive `role="presentation"` separators above the first option of each group. No special `role="group"` nesting — listbox is flat. This is the most compatible approach across screen readers.
+
+**6. Controlled + uncontrolled**
+Same pattern as React's native inputs: pass `value` + `onChange` for controlled, `defaultValue` for uncontrolled. Internal `internalValue` state is used only when `value` prop is `undefined`.
+
+**7. No portal — `position: absolute` inside relative wrapper**
+Portal + Floating UI handles viewport edge cases (dropdown near bottom flips up). Not needed for Storybook/portfolio. Can upgrade to portal + `@floating-ui/react` for production product apps.
+
+### Tokens Used (no new tokens required)
+All existing semantic tokens cover the full component:
+- Trigger border/focus: `--ds-border-strong`, `--ds-brand-600`, `--ds-brand-500` — same as Input
+- Dropdown panel: `--ds-bg-raised`, `--ds-border-base`, shadow-lg
+- Option hover: `--ds-bg-subtle`
+- Check icon: `--ds-brand-600`
+- Disabled options: `opacity-40` (uses `--ds-opacity-disabled` concept)
+- Status states: existing danger/success border + ring tokens
+
+*Last updated: April 3, 2026 — Select complete. Next: Table or Modal.*
+
+---
+
+## Session 13 — Group 1: Checkbox, Radio, Toggle
+
+**Date:** April 4, 2026
+**Completed checklist:** ✅ components → ✅ stories → ✅ type-check clean → ✅ bugs fixed post-screenshot
+
+### Checkbox
+
+Hidden native `<input type="checkbox">` with a custom visual `<span>`. ARIA comes for free from the native input — no `role` needed. Focus ring is wired via CSS `peer` variant: `sr-only peer` on the input, `peer-focus-visible:ring-*` on the visual span.
+
+`indeterminate` cannot be set via HTML attribute — set imperatively via `inputRef.current.indeterminate` in `useEffect`. Visual is `MinusIcon` (not a partial fill) for clarity at all sizes.
+
+**Bug (found via screenshot):** When unchecked, the icon slot rendered `null`. When checked, `<CheckIcon>` mounted. The DOM change from no-element to element caused a measurable height shift — the checkbox visually "jumped".
+
+**Fix:** Always render `<CheckIcon>`. Use `className="opacity-0"` when unchecked, `opacity-100` when checked. Stable layout, smooth opacity transition.
+
+### Radio
+
+`RadioGroupContext` carries `{ name, value, onChange, size, disabled }` so individual `Radio` instances don't duplicate props. `RadioGroup` uses `fieldset` + `legend` — the only semantic HTML structure that groups radios correctly for screen readers. Standalone `Radio` (outside a group) works for single-option toggles.
+
+Visual: outer circle (border) + inner filled dot (brand-600) when checked. No hidden input hack — the native `<input type="radio">` is `sr-only peer` and the peer variant drives the visual.
+
+### Toggle
+
+`role="switch"` + `aria-checked` on the button track. Thumb is a plain `<span>` positioned with `translate-x`. Thumb translate values calculated as `track_width - thumb_width - 2px_edge_padding`: sm=14px, md=18px, lg=22px.
+
+**Bug (found via screenshot):** Track used `inline-flex` without `items-center`. Flex default `align-items: stretch` overrides the thumb's explicit `h-3/h-4/h-5` classes — thumb stretched to full track height → oval, not circle.
+
+**Fix:** Added `items-center` to track classnames.
+
+---
+
+## Session 14 — Group 2: Table, Modal, Toast
+
+**Date:** April 4, 2026
+**Completed checklist:** ✅ components → ✅ stories → ✅ type-check clean
+
+### Table
+
+Generic `Table<T>` avoids field-key string access — `TableColumn<T>` uses a `cell: (row: T, index: number) => React.ReactNode` function, giving full type safety for any row shape.
+
+Select-all uses `checked={allSelected}` + `indeterminate={someSelected}` directly on the DS `<Checkbox>` component. Sort state is fully controlled — parent owns `sortKey` + `sortDir`.
+
+`SortIcon` (private): stacks CaretUp/Down. Active caret = brand-600; inactive = muted. Skeleton rows: `Array.from({ length: loadingRows }).map(...)` + `animate-pulse` cells — no separate skeleton component needed.
+
+**TypeScript note:** `Table.stories.tsx` used `Record<VendorRow['risk'], JSX.Element>` which threw `Cannot find namespace 'JSX'`. Fix: use `React.ReactElement` and add `import React`.
+
+### Modal
+
+`createPortal(content, document.body)` with `useState(mounted)` SSR guard to prevent `document` access during server render. Body scroll lock saves + restores previous `overflow` value on cleanup.
+
+`ConfirmModal` is a named export wrapper — keeps base `Modal` fully flexible (any footer) while providing an opinionated confirm/cancel pattern with `loading` state. Uses `<Button>` from the DS.
+
+### Toast
+
+Provider + `useToast()` hook. `timers = useRef<Map<string, ReturnType<typeof setTimeout>>>` per-toast so individual toasts can be dismissed without cancelling others. `duration: 0` = persistent (no auto-dismiss). `aria-live="polite"` — not `assertive` — to avoid interrupting screen reader mid-sentence for non-critical notifications.
+
+`Toast` standalone export (no provider) for the `AllVariants` Storybook story. The live `Playground` story wraps in `ToastProvider` via the `decorators` array in story meta.
+
+---
+
+## Session 15 — Group 3: Tabs, Tooltip, DropdownMenu
+
+**Date:** April 4, 2026
+**Completed checklist:** ✅ components → ✅ stories → ✅ type-check clean
+
+### Tabs
+
+Three visual variants: `line` (border-b-2 on active tab), `pill` (bg-subtle rounded track, active gets surface bg), `boxed` (full border box around active). All share the same roving tabindex keyboard model.
+
+Roving tabindex: active tab `tabIndex={0}`, others `tabIndex={-1}`. Arrow keys move focus AND activate immediately (auto-activation per ARIA APG recommendation for tabs). `tabRefs` array enables programmatic `.focus()` on keyboard move without a `useEffect` / `setTimeout` dance.
+
+`TabPanel` is a separate named export (`role="tabpanel"` + `hidden` attribute) rather than children of Tabs — allows panels to be placed anywhere in the DOM hierarchy.
+
+### Tooltip
+
+`React.cloneElement` injects `aria-describedby={tooltipId}` onto the trigger. The trigger doesn't need to know about the tooltip. Hover: 500ms default delay (prevents tooltip flicker when mousing across UI). Focus: immediate (keyboard users need instant feedback).
+
+Arrow is pure CSS: `border-4 border-transparent` + one directional side colored to `--ds-bg-inverse`. Avoids an SVG dependency for a simple 8px triangle.
+
+### DropdownMenu
+
+Full keyboard suite: Arrow Up/Down cycle items, Home/End jump to first/last, Enter/Space activate, Escape closes + returns focus to trigger, Tab closes (natural flow). `itemRefs` array + `useEffect` on `highlightedIdx` focus items programmatically — menu items use `tabIndex={-1}`.
+
+`danger` prop applies `--ds-danger-bg` + `--ds-danger-text` on hover — matches the Button danger variant semantics.
+
+**TypeScript:** `cloneElement` types `trigger.props` as `unknown` when element type is generic. Fix:
+```tsx
+type TriggerProps = React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLButtonElement> };
+const triggerEl = React.cloneElement(trigger as React.ReactElement<TriggerProps>, { ... });
+```
+
+---
+
+## Session 16 — Group 4: Sidebar / AppShell, AiChat
+
+**Date:** April 4, 2026
+**Completed checklist:** ✅ components → ✅ stories → ✅ type-check clean → ✅ bugs fixed post-screenshot
+
+### Sidebar / AppShell
+
+`AppShell`: thin `flex h-screen overflow-hidden` wrapper — sidebar and main content are siblings, not nested.
+
+`Sidebar`: controlled/uncontrolled collapse via `collapsed` / `defaultCollapsed` props. Width transition animates `width` only (`transition-[width]`) to avoid animating unrelated CSS on re-renders. Expanded: `w-60` (240px), Collapsed: `w-14` (56px).
+
+`NavItemRow` uses `title={collapsed ? item.label : undefined}` for native browser tooltip on icon-only items.
+
+**Bug (found via screenshot):** Collapse toggle was `absolute -right-3 top-16` to float at sidebar edge. Parent `overflow-hidden` (required for smooth width animation) clipped it — button was half-visible.
+
+**Fix:** Moved toggle inside the header row. When expanded: small icon button right-aligned in header. When collapsed: same button centered in the header area. No absolute positioning, no overflow conflict.
+
+### AiChat
+
+Three message roles:
+- `user` — right-aligned, brand-600 bubble, rounded-br-sm
+- `assistant` — left-aligned, surface bg + border, rounded-bl-sm shadow-xs
+- `system` — centred italic muted pill (for auto-assign notices, context injections)
+
+`MessageContent` splits content on ```` ``` ```` fences → renders `<pre><code>` blocks inline. Covers the most common LLM output without a full markdown parser dependency.
+
+`isStreaming` prop shows a pulsing cursor caret inline — lets the parent drive streaming state through the message object rather than separate UI state.
+
+`EmptyState` shows suggestion chips when `messages.length === 0`. Clicking a chip calls `onSend` directly — same path as typing, no special handling.
+
+Input auto-grows via `el.scrollHeight` up to 180px max. Capped to prevent textarea from consuming the viewport on large pastes.
+
+---
+
+## Session 17 — Bug Fixes & Component Audit
+
+**Date:** April 4, 2026
+
+### Bugs Fixed
+
+| Component | Bug | Root Cause | Fix |
+|-----------|-----|-----------|-----|
+| Toggle | Thumb oval, not circular | `inline-flex` without `items-center` — flex `align-items: stretch` overrode explicit `h-*` on thumb | Added `items-center` to track classes |
+| Checkbox | Layout jump on check/uncheck | Conditional `null` render when unchecked — DOM node mount/unmount caused height shift | Always render `<CheckIcon>`, use `opacity-0` when unchecked |
+| Sidebar | Collapse button clipped | `absolute -right-3 top-16` was clipped by parent `overflow-hidden` | Moved button inside header row, removed absolute positioning |
+| Button | Hardcoded `red-700`/`red-800` in danger hover/active | Token used for hover value wasn't from DS — missed during initial build | Replaced with `--ds-danger-solid-bg` |
+
+### "Use Own Components" Sweep
+
+Audited all component files to verify DS components are used internally where appropriate:
+
+| Component | Uses DS internally |
+|-----------|-------------------|
+| Modal — `ConfirmModal` footer | ✅ uses `<Button>` |
+| Table — select-all / row checkboxes | ✅ uses `<Checkbox>` |
+| Modal.stories | ✅ uses `<Button>`, `<Input>` |
+| Toast.stories | ✅ uses `<Button>` for triggers |
+| DropdownMenu.stories | ✅ uses `<Button>` for action triggers |
+| Tooltip.stories | ✅ uses `<Button>`, `<Badge>` |
+| Sidebar.stories | ✅ uses `<Badge>` for nav badges |
+| AiChat (send/stop, message actions) | Raw `<button>` — justified: icon-only or non-standard sizing not covered by `<Button>` API |
+| Modal (close X) | Raw `<button>` — justified: icon-only chrome button |
+| Toast (dismiss X) | Raw `<button>` — justified: icon-only chrome button |
+
+---
+
+## Component Status (Updated)
+
+| Component | Built | Dark Mode | Stories | Uses DS Tokens | Uses DS Components |
+|-----------|-------|-----------|---------|---------------|--------------------|
+| Button | ✅ | ✅ | ✅ | ✅ | — |
+| Input | ✅ | ✅ | ✅ | ✅ | — |
+| Select | ✅ | ✅ | ✅ | ✅ | — |
+| Checkbox | ✅ | ✅ | ✅ | ✅ | — |
+| Radio / RadioGroup | ✅ | ✅ | ✅ | ✅ | — |
+| Toggle | ✅ | ✅ | ✅ | ✅ | — |
+| Badge | ✅ | ✅ | ✅ | ✅ | — |
+| Card | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Table | ✅ | ✅ | ✅ | ✅ | ✅ Checkbox |
+| Modal | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Toast | ✅ | ✅ | ✅ | ✅ | — |
+| Tabs | ✅ | ✅ | ✅ | ✅ | — |
+| Tooltip | ✅ | ✅ | ✅ | ✅ | — |
+| DropdownMenu | ✅ | ✅ | ✅ | ✅ | — |
+| Sidebar / AppShell | ✅ | ✅ | ✅ | ✅ | ✅ Badge |
+| AiChat | ✅ | ✅ | ✅ | ✅ | — |
+
+*Last updated: April 4, 2026 — All 16 components complete. Foundation + UI library done.*

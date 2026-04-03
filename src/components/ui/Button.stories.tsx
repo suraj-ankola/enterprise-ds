@@ -49,6 +49,13 @@ const meta: Meta<typeof Button> = {
     disabled: false,
     fullWidth: false,
   },
+  parameters: {
+    docs: {
+      description: {
+        component: 'Primary interactive element. 4 variants (primary · secondary · ghost · danger), 3 sizes on the 8pt grid. Supports loading spinner, disabled, left/right icon slots, and full-width mode. All variants use `--ds-brand-*` tokens — they switch automatically with the product theme.',
+      },
+    },
+  },
 };
 
 export default meta;

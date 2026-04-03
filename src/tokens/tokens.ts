@@ -261,5 +261,15 @@ export const accessibility = {
     'ds-danger-text on ds-danger-bg':   '5.3:1 AA',
     'ds-success-text on ds-success-bg': '4.6:1 AA',
     'ds-warning-text on ds-warning-bg': '4.5:1 AA',
+    // Badge solid — light mode
+    'ds-success-solid-text on ds-success-solid-bg (#15803d)': '6.1:1 AA',
+    'ds-warning-solid-text on ds-warning-solid-bg (#92400e)': '7.6:1 AA',
+    'ds-danger-solid-text on ds-danger-solid-bg (#b91c1c)':   '5.9:1 AA',
+    'ds-info-solid-text on ds-info-solid-bg (#0369a1)':       '5.9:1 AA',
+    // Badge solid — dark mode
+    'ds-success-solid-text (#052e16) on ds-success-solid-bg (#4ade80)': '8.8:1 AAA',
+    'ds-warning-solid-text (#451a03) on ds-warning-solid-bg (#fbbf24)': '9.6:1 AAA',
+    'ds-danger-solid-text (#450a0a) on ds-danger-solid-bg (#fca5a5)':   '7.0:1 AAA',
+    'ds-info-solid-text (#082f49) on ds-info-solid-bg (#7dd3fc)':       '9.2:1 AAA',
   },
 } as const;

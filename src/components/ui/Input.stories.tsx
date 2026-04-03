@@ -38,6 +38,13 @@ const meta: Meta<typeof Input> = {
     required: false,
     fullWidth: false,
   },
+  parameters: {
+    docs: {
+      description: {
+        component: 'Text input with label, helper text, and error/success states. 3 sizes. Prefix/suffix icon slots. `errorMessage` prop replaces helper text and switches the border to danger tokens. Fully accessible: `aria-invalid`, `aria-describedby`, auto-generated `id` via `useId()`.',
+      },
+    },
+  },
 };
 
 export default meta;

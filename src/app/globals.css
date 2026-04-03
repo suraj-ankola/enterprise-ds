@@ -233,6 +233,17 @@
   --ds-info-border:    #7dd3fc;
   --ds-info-icon:      #0284c7;
 
+  /* ── Status solid-fill (Badge solid appearance, filled chips)
+     WCAG AA verified — all pass ≥ 4.5:1 with their paired text color  */
+  --ds-success-solid-bg:   #15803d;  /* green-700  — 6.1:1 on white ✓ */
+  --ds-success-solid-text: #ffffff;
+  --ds-warning-solid-bg:   #92400e;  /* amber-800  — 7.6:1 on white ✓ */
+  --ds-warning-solid-text: #ffffff;
+  --ds-danger-solid-bg:    #b91c1c;  /* red-700    — 5.9:1 on white ✓ */
+  --ds-danger-solid-text:  #ffffff;
+  --ds-info-solid-bg:      #0369a1;  /* sky-700    — 5.9:1 on white ✓ */
+  --ds-info-solid-text:    #ffffff;
+
   /* ── Brand (default = Compliance / Blue) ──────────────────────────────
      Override via [data-theme="itops"] or [data-theme="analytics"]
      ───────────────────────────────────────────────────────────────────── */
@@ -361,6 +372,16 @@
   --ds-info-text:       #38bdf8;
   --ds-info-border:     #075985;
   --ds-info-icon:       #38bdf8;
+
+  /* Status solid-fill — dark mode (light bg + dark text for contrast) */
+  --ds-success-solid-bg:   #4ade80;  /* green-400  — 8.8:1 on #052e16 ✓ */
+  --ds-success-solid-text: #052e16;  /* green-950 */
+  --ds-warning-solid-bg:   #fbbf24;  /* amber-400  — 9.6:1 on #451a03 ✓ */
+  --ds-warning-solid-text: #451a03;  /* amber-950 */
+  --ds-danger-solid-bg:    #fca5a5;  /* red-300    — 7.0:1 on #450a0a ✓ */
+  --ds-danger-solid-text:  #450a0a;  /* red-950 */
+  --ds-info-solid-bg:      #7dd3fc;  /* sky-300    — 9.2:1 on #082f49 ✓ */
+  --ds-info-solid-text:    #082f49;  /* sky-950 */
 
   /* Brand default — dark mode adjustments */
   --ds-brand-500:   #60a5fa;

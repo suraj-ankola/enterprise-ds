@@ -37,7 +37,14 @@ const meta: Meta<typeof Card> = {
     padding: 'md',
     clickable: false,
   },
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        component: 'Compound surface container. Sub-components: `CardHeader`, `CardBody`, `CardFooter`, `CardDivider`, `CardSkeleton`. 4 variants (default · outlined · elevated · ghost). `clickable` prop adds hover affordance and keyboard activation. Skeleton included for loading states.',
+      },
+    },
+  },
 };
 
 export default meta;

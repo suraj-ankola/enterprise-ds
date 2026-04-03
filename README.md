@@ -1,36 +1,130 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Enterprise Design System
+
+A shared UI foundation for three enterprise products — built with React 19, TypeScript strict, Tailwind CSS v4, and Storybook 10.
+
+## Products
+
+| Theme | Product | Brand colour |
+|-------|---------|-------------|
+| `compliance` | Compliance Risk Platform | Blue |
+| `itops` | IT Ops AI Copilot | Violet |
+| `analytics` | Self-Serve Analytics | Cyan |
+
+Apply a theme by setting `data-theme="compliance"` (or `itops` / `analytics`) on any ancestor element. All `--ds-brand-*` tokens update automatically.
+
+---
+
+## Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| UI | React 19, TypeScript strict |
+| Styles | Tailwind CSS v4 (`@theme` primitives) |
+| Icons | Phosphor Icons v2 |
+| Storybook | v10 with `@storybook/nextjs-vite` |
+
+---
+
+## Token Architecture
+
+Three-layer cascade — components only ever touch the semantic layer.
+
+```
+Primitive  (@theme in globals.css)
+  ↓  raw hex values — never used in components
+Semantic   (:root / .dark in globals.css)
+  ↓  --ds-* tokens tied to meaning, not colour
+Brand      ([data-theme] in globals.css)
+     --ds-brand-* tokens — switches per product
+```
+
+### Key semantic tokens
+
+| Group | Tokens |
+|-------|--------|
+| Backgrounds | `--ds-bg-base` `--ds-bg-surface` `--ds-bg-subtle` `--ds-bg-raised` |
+| Text | `--ds-text-primary` `--ds-text-secondary` `--ds-text-muted` `--ds-text-on-brand` |
+| Borders | `--ds-border-base` `--ds-border-strong` `--ds-border-focus` |
+| Brand | `--ds-brand-100` … `--ds-brand-800` `--ds-brand-600` (primary action) |
+| Status | `--ds-success-*` `--ds-warning-*` `--ds-danger-*` `--ds-info-*` |
+| Motion | `--ds-duration-fast` `--ds-duration-base` `--ds-duration-slow` |
+| Z-index | `--ds-z-dropdown` `--ds-z-modal` `--ds-z-toast` `--ds-z-tooltip` |
+
+See `src/tokens/tokens.ts` for the full typed catalogue with usage notes.
+
+---
+
+## Component Library
+
+### Foundations (Storybook → Foundations)
+
+| Story | What it covers |
+|-------|---------------|
+| Colors | Full semantic token palette + dark mode |
+| Typography | Type scale, font weights, line heights |
+| Spacing | 8pt grid reference |
+| Border Radius | Scale with usage rules |
+| Shadows | Elevation levels |
+| Icons | Phosphor icon catalogue |
+| Focus Ring | WCAG-compliant focus styles |
+| Grid | Layout grid & breakpoints |
+| Motion | Duration + easing reference |
+| States | Interactive state patterns |
+| Governance | Token rules & contribution guide |
+
+### UI Components (Storybook → UI)
+
+| Component | File | Notes |
+|-----------|------|-------|
+| Button | `Button.tsx` | 4 variants · 3 sizes · loading state |
+| Input | `Input.tsx` | Label · helper · error · prefix/suffix |
+| Select | `Select.tsx` | Searchable · grouped · ARIA combobox |
+| Checkbox | `Checkbox.tsx` | Indeterminate · 3 sizes · peer focus |
+| Radio / RadioGroup | `Radio.tsx` | Context-driven group · standalone |
+| Toggle | `Toggle.tsx` | Switch role · 3 sizes · label position |
+| Badge | `Badge.tsx` | 5 variants · solid/subtle · dot · counter |
+| Card | `Card.tsx` | Header / Body / Footer · 4 variants · skeleton |
+| Table | `Table.tsx` | Generic `<T>` · sort · row selection · skeleton |
+| Modal | `Modal.tsx` | Portal · sizes · ConfirmModal helper |
+| Toast | `Toast.tsx` | Provider + hook · 5 variants · auto-dismiss |
+| Tabs | `Tabs.tsx` | Line / Pill / Boxed · roving tabindex |
+| Tooltip | `Tooltip.tsx` | 4 sides · delay · cloneElement trigger |
+| DropdownMenu | `DropdownMenu.tsx` | ARIA menu · keyboard nav · danger items |
+| Sidebar / AppShell | `Sidebar.tsx` | Collapsible · controlled/uncontrolled |
+| AiChat | `AiChat.tsx` | Streaming · sources · actions · empty state |
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Install dependencies
+npm install
+
+# Run Storybook (primary dev environment)
+npm run storybook
+
+# Type check
+npm run type-check
+
+# Build Storybook
+npm run build-storybook
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Storybook runs at **http://localhost:6006** by default.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Rules for Contributors
 
-## Learn More
+1. **Tokens only** — components use `var(--ds-*)` exclusively. No hardcoded hex.
+2. **DS components first** — use `<Button>`, `<Input>`, `<Badge>` etc. before rolling your own.
+3. **8pt grid** — all spacing in multiples of 4px (half-step) or 8px (full step).
+4. **ARIA** — follow APG patterns. Every interactive element needs focus styles, roles, and labels.
+5. **Controlled + uncontrolled** — every form component supports both patterns.
+6. **Type safe** — `tsc --noEmit` must pass with zero errors before any commit.
+7. **Dark mode** — test every new token/component in `.dark` class context.
+8. **Three-theme test** — verify `data-theme` variants (compliance / itops / analytics) all look correct.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See `JOURNEY.md` for the full build log and architectural decisions.

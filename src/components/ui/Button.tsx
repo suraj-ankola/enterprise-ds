@@ -52,8 +52,8 @@ const VARIANT: Record<ButtonVariant, string> = {
   danger: [
     'bg-[var(--ds-danger-icon)] text-white',
     'border border-[var(--ds-danger-icon)]',
-    'hover:bg-red-700 hover:border-red-700',
-    'active:bg-red-800 active:border-red-800',
+    'hover:bg-[var(--ds-danger-solid-bg)] hover:border-[var(--ds-danger-solid-bg)]',
+    'active:bg-[var(--ds-danger-solid-bg)] active:border-[var(--ds-danger-solid-bg)]',
     'shadow-sm',
     'focus-visible:ring-[var(--ds-danger-icon)]',
   ].join(' '),
