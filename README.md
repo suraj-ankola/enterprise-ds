@@ -128,6 +128,47 @@ See `src/tokens/tokens.ts` for the full typed catalogue with usage notes.
 | TagInput | `TagInput.tsx` | Controlled/uncontrolled · suggestions · max count |
 | DatePicker | `DatePicker.tsx` | Full calendar · min/max · today shortcut |
 
+### Data Visualisation (Storybook → UI/Chart)
+
+Powered by [Apache ECharts](https://echarts.apache.org) via `echarts-for-react`. All charts are **theme-aware** — colours are read from DS CSS tokens at render time and automatically respond to `data-theme` and `.dark` switches.
+
+| Component | File | Notes |
+|-----------|------|-------|
+| Chart | `Chart.tsx` | Base ECharts wrapper · `loading` state · height / className |
+| LineChart | `Chart.tsx` | Smooth/sharp · area fill · data zoom slider |
+| BarChart | `Chart.tsx` | Horizontal/vertical · stacked · value labels |
+| AreaChart | `Chart.tsx` | Convenience wrapper around LineChart with `showArea` |
+| DonutChart | `Chart.tsx` | Centre label/value · inner radius · legend right |
+| Sparkline | `Chart.tsx` | 48px inline chart · trend colour (positive/negative/neutral) |
+| HeatmapChart | `Chart.tsx` | visualMap slider · configurable colour range |
+| ScatterChart | `Chart.tsx` | Multi-series · variable symbol size |
+
+```tsx
+import { LineChart, DonutChart, Sparkline } from '@/components/ui/Chart';
+
+// Compliance score over time
+<LineChart
+  categories={['Jan','Feb','Mar',...]}
+  series={[{ name: 'ISO 27001', data: [68, 72, 79, ...] }]}
+  smooth
+  zoom
+/>
+
+// Risk distribution
+<DonutChart
+  data={[
+    { name: 'Critical', value: 12 },
+    { name: 'High',     value: 34 },
+    { name: 'Medium',   value: 87 },
+  ]}
+  centerLabel="Vendors"
+  centerValue="133"
+/>
+
+// KPI card trend
+<Sparkline data={[72,74,79,82,85,89,91]} trend="positive" width="100%" />
+```
+
 ---
 
 ## Getting Started

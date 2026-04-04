@@ -1097,4 +1097,91 @@ Two-phase close (same as Drawer): panel closes immediately on date select or out
 
 **Total: 28 components (+ sub-components). Full-stack enterprise UI library complete.**
 
+---
+
+## Session 22 — Data Visualisation Layer (Chart.tsx)
+
+**Date:** April 4, 2026
+**Goal:** Add an ECharts-powered chart library to the design system — theme-aware, enterprise-relevant, developer-friendly.
+
+### Why ECharts
+
+ECharts (Apache) is the industry-leading open-source chart library for enterprise dashboards:
+- Handles millions of data points without frame-drops (WebGL renderer available)
+- First-class TypeScript types (`echarts` package exports `EChartsOption`)
+- `echarts-for-react` wrapper gives us a clean React component interface
+- Better suited than Recharts or Chart.js for heatmaps, scatter with variable size, and data zoom sliders
+
+### Packages installed
+
+```bash
+npm install echarts echarts-for-react
+```
+
+Both packages resolve cleanly — no peer-dep conflicts with React 19.
+
+### Theme-aware colour problem
+
+CSS custom properties (`var(--ds-brand-600)`) cannot be used directly inside ECharts JS option objects — ECharts renders to Canvas, not DOM. Solution: `cssVar()` helper calls `getComputedStyle(document.documentElement).getPropertyValue(name)` at render time. Wrapped in `useMemo` so it only re-runs when the component re-mounts (which happens on theme switch in Storybook). All chart colours automatically follow `data-theme` and `.dark` context.
+
+### `baseOption()` — shared defaults
+
+Every chart inherits a consistent baseline:
+- `backgroundColor: 'transparent'` — chart sits inside DS Card/surface, not its own white box
+- Tooltip styled with `--ds-bg-surface / --ds-border-base` — matches DS card style, `border-radius:8px`
+- Legend uses `roundRect` icon, `--ds-text-secondary` labels
+- Grid with `containLabel: true` — axis labels never get clipped
+
+### Chart components built
+
+| Component | Type | Enterprise use case |
+|-----------|------|---------------------|
+| `LineChart` | Time-series | Compliance score trends, MTTR, SLA history |
+| `BarChart` | Grouped / stacked / horizontal | Framework coverage, vendor counts, MAU |
+| `AreaChart` | Filled line | Resource utilisation, alert volume |
+| `DonutChart` | Pie with hole + centre label | Risk distribution, audit status, routing breakdown |
+| `Sparkline` | Inline 48px | KPI cards — trend indication without axis noise |
+| `HeatmapChart` | Grid heat | Control risk matrix, alert density by hour × service |
+| `ScatterChart` | X-Y with variable size | Vendor risk vs spend, DORA metrics |
+
+### TypeScript fixes
+
+Three type issues resolved without `any` suppression:
+1. **`graphic` children** — ECharts' `GraphicComponentElementOption` types `style` as `PathStyleProps` which doesn't include `text`. Fixed with `as Record<string, unknown>` on each child style, and `as EChartsOption['graphic']` on the array — preserves outer type safety.
+2. **Heatmap tooltip formatter** — ECharts types `TopLevelFormatterParams` broadly. Fixed with `(params: unknown)` + inline cast.
+3. **Scatter tooltip formatter** — same pattern.
+
+### Stories built (Chart.stories.tsx)
+
+7 named stories with realistic enterprise data:
+
+| Story | Data scenario |
+|-------|--------------|
+| `Playground` | Compliance score trend — 3 frameworks, 12 months, zoom enabled |
+| `LineChartStory` | Security incident counts + MTTR by category |
+| `AreaChartStory` | Infrastructure utilisation + alert volume with noise reduction |
+| `BarChartStory` | Framework control coverage (stacked) + vendor risk (horizontal) + MAU |
+| `DonutChartStory` | Vendor risk profile + audit status + alert routing |
+| `SparklineStory` | 8 KPI cards with live sparklines + Badge delta |
+| `HeatmapChartStory` | Compliance risk matrix + alert density by hour |
+| `ScatterChartStory` | Vendor risk vs spend + DORA metrics |
+| `EnterpriseDashboard` | Full dashboard composition — KPIs + 4 chart panels |
+| `LoadingState` | Loading skeleton for 4 chart types |
+
+### Architectural decisions
+
+- **No Floating UI / Popper** — charts are static, no positioning needed
+- **`notMerge={true}`** — each render replaces the full option, no incremental diff bugs
+- **`'use client'` directive** — ECharts accesses `document` / `window`, SSR-incompatible
+- **`height` prop** — Sparkline defaults 48px; all others default 300px. Always explicit, never auto-height, to avoid CLS
+- **Palette** — 7-colour array driven by DS tokens: brand, success, warning, danger, info, violet, amber. Violet and amber are hardcoded fallbacks (not in all brand themes)
+
+### Component Status (updated)
+
+| Component | File | Stories | Types | Dark | DS tokens | Uses DS components |
+|-----------|------|---------|-------|------|-----------|-------------------|
+| Chart / LineChart / BarChart / AreaChart / DonutChart / Sparkline / HeatmapChart / ScatterChart | `Chart.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge · Card |
+
+**Total: 29 components (+ sub-components). Full enterprise UI library + data visualisation layer.**
+
 *Last updated: April 4, 2026*
