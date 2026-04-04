@@ -75,6 +75,8 @@ See `src/tokens/tokens.ts` for the full typed catalogue with usage notes.
 
 ### UI Components (Storybook → UI)
 
+**Core**
+
 | Component | File | Notes |
 |-----------|------|-------|
 | Button | `Button.tsx` | 4 variants · 3 sizes · loading state |
@@ -93,6 +95,38 @@ See `src/tokens/tokens.ts` for the full typed catalogue with usage notes.
 | DropdownMenu | `DropdownMenu.tsx` | ARIA menu · keyboard nav · danger items |
 | Sidebar / AppShell | `Sidebar.tsx` | Collapsible · controlled/uncontrolled |
 | AiChat | `AiChat.tsx` | Streaming · sources · actions · empty state |
+
+**Feedback & Status**
+
+| Component | File | Notes |
+|-----------|------|-------|
+| Alert | `Alert.tsx` | Inline banner · 4 variants · dismiss · action slot |
+| Progress | `Progress.tsx` | 5 variants · 4 sizes · indeterminate |
+| Skeleton | `Skeleton.tsx` | text / rect / circle · `SkeletonCard` · `SkeletonTable` |
+
+**Overlays**
+
+| Component | File | Notes |
+|-----------|------|-------|
+| Drawer | `Drawer.tsx` | right / left / bottom · animated · portal |
+| Popover | `Popover.tsx` | 4 sides · 3 alignments · outside-click close |
+| CommandPalette | `CommandPalette.tsx` | ⌘K · groups · shortcuts · full keyboard nav |
+
+**Navigation**
+
+| Component | File | Notes |
+|-----------|------|-------|
+| Breadcrumb | `Breadcrumb.tsx` | ARIA nav · icons · custom separator |
+| Pagination | `Pagination.tsx` | Smart ellipsis · range info · sm/md sizes |
+| Stepper | `Stepper.tsx` | Horizontal + vertical · click-to-go-back |
+
+**Data & Forms**
+
+| Component | File | Notes |
+|-----------|------|-------|
+| Avatar / AvatarGroup | `Avatar.tsx` | Image/initials/icon fallback · status dot · overlap group |
+| TagInput | `TagInput.tsx` | Controlled/uncontrolled · suggestions · max count |
+| DatePicker | `DatePicker.tsx` | Full calendar · min/max · today shortcut |
 
 ---
 

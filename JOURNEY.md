@@ -936,3 +936,165 @@ Audited all component files to verify DS components are used internally where ap
 | AiChat | ✅ | ✅ | ✅ | ✅ | — |
 
 *Last updated: April 4, 2026 — All 16 components complete. Foundation + UI library done.*
+
+---
+
+## Session 18 — Group 5: Alert, Progress, Skeleton
+
+**Date:** April 4, 2026
+**Completed checklist:** ✅ components → ✅ stories → ✅ type-check clean
+
+### Alert
+
+Inline feedback banner with `role="alert"`. Unlike Toast it stays in document flow — used for persistent warnings, errors, and info that the user needs to act on (e.g. overdue audits, failed integrations).
+
+4 variants use `--ds-*-bg`, `--ds-*-border`, `--ds-*-icon`, `--ds-*-text` tokens — no hardcoded colours. `icon={null}` hides the icon. `action` slot renders any content below the body (typically a `<Button>`). `onDismiss` adds a ×  button.
+
+### Progress
+
+`role="progressbar"` with `aria-valuenow/min/max`. `indeterminate` sets `aria-busy` and animates a sliding fill. 5 colour variants map to semantic tokens: brand, success, warning, danger, neutral. `showValue` renders a `%` label right-aligned next to the bar. `label` is used both visually and as `aria-label`.
+
+### Skeleton
+
+Three primitive variants: `text` (stacked lines, last line 60% width), `rect` (block), `circle` (rounded-full). All `aria-hidden` — purely decorative.
+
+`SkeletonCard` — pre-composed card loading state with optional avatar row. Saves repeating primitive composition in every list/grid that needs loading UI.
+
+`SkeletonTable` — pre-composed table loading state with header row + configurable rows × cols. Matches the `Table` component's visual structure.
+
+---
+
+## Session 19 — Group 6: Drawer, Popover, CommandPalette
+
+**Date:** April 4, 2026
+**Completed checklist:** ✅ components → ✅ stories → ✅ type-check clean
+
+### Drawer
+
+Portal-based slide-in panel. 3 sides (right · left · bottom) × 5 sizes. CSS `transition-transform` drives the open/close animation — `translate-x-full` (right), `-translate-x-full` (left), `translate-y-full` (bottom) when closed; `translate-x-0 translate-y-0` when open.
+
+Two-phase close: `open` prop goes false → 300ms CSS transition plays → `visible` state goes false → portal unmounts. Prevents flash of content disappearing before animation completes.
+
+Body scroll lock saves + restores previous `overflow` value. ESC closes and can return focus to trigger.
+
+### Popover
+
+Lightweight non-modal anchored overlay. `React.cloneElement` injects `aria-haspopup="dialog"` + `aria-expanded` onto any trigger. 4 sides × 3 alignment positions via position class maps. Closes on outside `mousedown` and Escape.
+
+Deliberate choice: no portal, no `@floating-ui`. Absolute positioning inside a `relative` wrapper is sufficient for Storybook/portfolio use cases and avoids adding a dependency. Can upgrade to Floating UI for production.
+
+**TypeScript:** narrowed cloneElement trigger type to `HTMLAttributes<HTMLButtonElement>` to avoid `MouseEvent<Element>` mismatch.
+
+### CommandPalette
+
+Portal-based full-screen command palette (Cmd+K pattern). Key design decisions:
+
+- Search filters `label` + `detail` with `normalize()` (lowercase, collapsed whitespace)
+- Groups preserved from item order — rendered as non-interactive dividers (not nested DOM groups)
+- Keyboard: Arrow Up/Down cycle filtered items, Enter activates, Escape closes and returns focus
+- `aria-activedescendant` on the search input tracks highlighted item
+- `scrollIntoView({ block: 'nearest' })` keeps highlighted item visible as user arrows
+- Shortcut hints rendered as `<kbd>` elements — styled with subtle border + bg tokens
+
+**TypeScript fixes:** `SlashIcon` doesn't exist in Phosphor v2 (Breadcrumb story) — replaced with a literal `/` string.
+
+---
+
+## Session 20 — Group 7: Breadcrumb, Pagination, Stepper
+
+**Date:** April 4, 2026
+**Completed checklist:** ✅ components → ✅ stories → ✅ type-check clean
+
+### Breadcrumb
+
+ARIA structure: `<nav aria-label="Breadcrumb">` → `<ol role="list">` → `<li>` items. Last item gets `aria-current="page"` automatically. Ancestors render as `<a>` (with `href`) or a click-only `<a>` (SPA pattern, `href="#"` + `onClick`). Items with neither are plain `<span>`.
+
+`separator` prop defaults to `<CaretRightIcon>` but accepts any `ReactNode` — `/` slash, `·` dot, etc.
+
+### Pagination
+
+Smart ellipsis algorithm: shows first + last page always, `siblingCount` pages around current page, `…` where gaps exist. Two `…` positions possible (left + right). When total pages ≤ `2 * siblingCount + 5`, no ellipsis shown (all pages visible).
+
+`totalItems` + `pageSize` renders a "1–25 of 487" range label left of the page buttons. Active page uses `bg-[var(--ds-brand-600)] text-white`. Prev/Next buttons use `disabled` attribute + visual `opacity-40`.
+
+### Stepper
+
+Two orientations: horizontal (connector line spans between circles above labels) and vertical (connector line runs down-left of circles).
+
+Status auto-computed: `index < currentStep` = complete, `index === currentStep` = current, else upcoming. `status` prop per-step overrides this for manual control (e.g. marking a step as error).
+
+Completed steps are clickable when `onStepClick` is provided — the circle renders as a `<button>` with focus ring. Upcoming steps are not interactive. `optional` prop shows a small "(optional)" label.
+
+---
+
+## Session 21 — Group 8: Avatar, TagInput, DatePicker
+
+**Date:** April 4, 2026
+**Completed checklist:** ✅ components → ✅ stories → ✅ type-check clean → ✅ 3 bugs fixed
+
+### Avatar
+
+Image → initials → icon fallback priority. Image `onError` hides broken image so initials/icon show through. Status dot uses `ring-2 ring-[var(--ds-bg-surface)]` to create the gap between dot and avatar edge — handles any background colour without needing a separate gap element.
+
+`AvatarGroup` uses negative `margin-left` (`-ml-2`) to overlap avatars. Ring on each item creates the separation. Overflow count uses the same `SIZE` map class. `React.cloneElement` injects the `size` prop onto each Avatar child so the group `size` prop cascades down.
+
+### TagInput
+
+Controlled/uncontrolled. Tags rendered inline in the field — clicking anywhere focuses the hidden input. `confirmKeys` defaults to `['Enter', ',']` — comma is stripped from the tag value before adding. Backspace on empty input removes the last tag.
+
+Suggestions dropdown: `onBlur` adds the current input value as a tag (with 150ms timeout to allow suggestion `onMouseDown` to fire first — prevents the blur closing the list before the click registers).
+
+`max` prop disables the input entirely when reached (input not rendered). Counter label shows `tags.length/max`.
+
+### DatePicker
+
+Calendar grid built from first-day-of-month offset + `new Date(year, month + 1, 0).getDate()` for days-in-month. No external dependency.
+
+Today's date highlighted with `border border-[var(--ds-brand-600)]` (not filled — reserved for selected date). Selected date gets `bg-[var(--ds-brand-600)] text-white`. Disabled dates (outside min/max) get `opacity-30 cursor-not-allowed`.
+
+"Today" shortcut at the bottom navigates the view to current month and selects today in one click.
+
+Two-phase close (same as Drawer): panel closes immediately on date select or outside click — no animation needed.
+
+**TypeScript fixes:**
+- `Badge` with `dot` prop missing required `children` → added `{''}` empty child
+- `Popover` `cloneElement` `MouseEvent<Element>` mismatch → narrowed to `HTMLButtonElement`
+
+---
+
+## Component Status (Full Library — April 4, 2026)
+
+| Component | Built | Dark Mode | Stories | DS Tokens | DS Components |
+|-----------|-------|-----------|---------|-----------|---------------|
+| Button | ✅ | ✅ | ✅ | ✅ | — |
+| Input | ✅ | ✅ | ✅ | ✅ | — |
+| Select | ✅ | ✅ | ✅ | ✅ | — |
+| Checkbox | ✅ | ✅ | ✅ | ✅ | — |
+| Radio / RadioGroup | ✅ | ✅ | ✅ | ✅ | — |
+| Toggle | ✅ | ✅ | ✅ | ✅ | — |
+| Badge | ✅ | ✅ | ✅ | ✅ | — |
+| Card | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Table | ✅ | ✅ | ✅ | ✅ | ✅ Checkbox |
+| Modal | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Toast | ✅ | ✅ | ✅ | ✅ | — |
+| Tabs | ✅ | ✅ | ✅ | ✅ | — |
+| Tooltip | ✅ | ✅ | ✅ | ✅ | — |
+| DropdownMenu | ✅ | ✅ | ✅ | ✅ | — |
+| Sidebar / AppShell | ✅ | ✅ | ✅ | ✅ | ✅ Badge |
+| AiChat | ✅ | ✅ | ✅ | ✅ | — |
+| Alert | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Progress | ✅ | ✅ | ✅ | ✅ | — |
+| Skeleton / SkeletonCard / SkeletonTable | ✅ | ✅ | ✅ | ✅ | — |
+| Drawer | ✅ | ✅ | ✅ | ✅ | ✅ Button · Badge · Input |
+| Popover | ✅ | ✅ | ✅ | ✅ | ✅ Button · Badge · Progress |
+| CommandPalette | ✅ | ✅ | ✅ | ✅ | — |
+| Breadcrumb | ✅ | ✅ | ✅ | ✅ | — |
+| Pagination | ✅ | ✅ | ✅ | ✅ | — |
+| Stepper | ✅ | ✅ | ✅ | ✅ | ✅ Button · Input |
+| Avatar / AvatarGroup | ✅ | ✅ | ✅ | ✅ | — |
+| TagInput | ✅ | ✅ | ✅ | ✅ | — |
+| DatePicker | ✅ | ✅ | ✅ | ✅ | — |
+
+**Total: 28 components (+ sub-components). Full-stack enterprise UI library complete.**
+
+*Last updated: April 4, 2026*
