@@ -5,7 +5,7 @@ import { Input } from './Input';
 import { Modal, ConfirmModal } from './Modal';
 
 const meta: Meta<typeof Modal> = {
-  title: 'UI/Modal',
+  title: 'Overlays/Modal',
   component: Modal,
   argTypes: { onClose: { control: false } },
   parameters: {

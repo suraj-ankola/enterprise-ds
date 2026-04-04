@@ -3,7 +3,7 @@ import { Button } from './Button';
 import { Toast, ToastProvider, useToast } from './Toast';
 
 const meta: Meta = {
-  title: 'UI/Toast',
+  title: 'Feedback/Toast',
   component: Toast,
   parameters: {
     docs: {

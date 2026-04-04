@@ -18,7 +18,7 @@ import { Card, CardHeader, CardBody, CardFooter, CardDivider, CardSkeleton } fro
 import { Button } from './Button';
 
 const meta: Meta<typeof Card> = {
-  title: 'UI/Card',
+  title: 'Core/Card',
   component: Card,
   tags: ['autodocs'],
   argTypes: {

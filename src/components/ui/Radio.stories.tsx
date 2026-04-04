@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Radio, RadioGroup } from './Radio';
 
 const meta: Meta<typeof Radio> = {
-  title: 'UI/Radio',
+  title: 'Core/Radio',
   component: Radio,
   argTypes: { onChange: { control: false } },
   parameters: {

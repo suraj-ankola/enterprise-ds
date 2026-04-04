@@ -4,7 +4,7 @@ import { Button } from './Button';
 import { Alert } from './Alert';
 
 const meta: Meta<typeof Alert> = {
-  title: 'UI/Alert',
+  title: 'Feedback/Alert',
   component: Alert,
   parameters: {
     docs: {

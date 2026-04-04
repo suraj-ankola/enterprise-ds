@@ -10,7 +10,7 @@ import { CommandPalette } from './CommandPalette';
 import type { CommandItem } from './CommandPalette';
 
 const meta: Meta<typeof CommandPalette> = {
-  title: 'UI/CommandPalette',
+  title: 'Overlays/CommandPalette',
   component: CommandPalette,
   parameters: {
     docs: {

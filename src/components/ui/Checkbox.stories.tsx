@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Checkbox } from './Checkbox';
 
 const meta: Meta<typeof Checkbox> = {
-  title: 'UI/Checkbox',
+  title: 'Core/Checkbox',
   component: Checkbox,
   argTypes: {
     onChange: { control: false },

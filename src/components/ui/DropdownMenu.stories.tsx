@@ -8,7 +8,7 @@ import { Button } from './Button';
 import { DropdownMenu } from './DropdownMenu';
 
 const meta: Meta<typeof DropdownMenu> = {
-  title: 'UI/DropdownMenu',
+  title: 'Overlays/DropdownMenu',
   component: DropdownMenu,
   parameters: {
     docs: {

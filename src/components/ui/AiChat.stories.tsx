@@ -5,7 +5,7 @@ import { ChatWindow } from './AiChat';
 import type { ChatMessage } from './AiChat';
 
 const meta: Meta = {
-  title: 'UI/AI Chat',
+  title: 'AI/AiChat',
   component: ChatWindow,
   parameters: {
     docs: {

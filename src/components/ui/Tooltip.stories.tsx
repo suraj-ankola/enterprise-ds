@@ -5,7 +5,7 @@ import { Badge } from './Badge';
 import { Tooltip } from './Tooltip';
 
 const meta: Meta<typeof Tooltip> = {
-  title: 'UI/Tooltip',
+  title: 'Overlays/Tooltip',
   component: Tooltip,
   parameters: {
     docs: {

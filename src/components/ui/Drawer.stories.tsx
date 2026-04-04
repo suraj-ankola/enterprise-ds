@@ -6,7 +6,7 @@ import { Badge } from './Badge';
 import { Drawer } from './Drawer';
 
 const meta: Meta<typeof Drawer> = {
-  title: 'UI/Drawer',
+  title: 'Overlays/Drawer',
   component: Drawer,
   parameters: {
     docs: {

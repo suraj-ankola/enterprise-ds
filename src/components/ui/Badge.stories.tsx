@@ -20,7 +20,7 @@ import { Badge, BadgeVariant, BadgeAppearance, BadgeSize } from './Badge';
 // ─── Meta ─────────────────────────────────────────────────────────────────────
 
 const meta: Meta<typeof Badge> = {
-  title: 'UI/Badge',
+  title: 'Core/Badge',
   component: Badge,
   tags: ['autodocs'],
   argTypes: {

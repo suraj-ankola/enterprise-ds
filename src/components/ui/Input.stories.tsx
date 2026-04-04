@@ -14,7 +14,7 @@ import { Input } from './Input';
 // ─── Meta ─────────────────────────────────────────────────────────────────────
 
 const meta: Meta<typeof Input> = {
-  title: 'UI/Input',
+  title: 'Core/Input',
   component: Input,
   tags: ['autodocs'],
   argTypes: {

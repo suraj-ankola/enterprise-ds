@@ -8,7 +8,7 @@ import { Progress } from './Progress';
 import { Popover } from './Popover';
 
 const meta: Meta<typeof Popover> = {
-  title: 'UI/Popover',
+  title: 'Overlays/Popover',
   component: Popover,
   parameters: {
     docs: {

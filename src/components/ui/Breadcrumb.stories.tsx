@@ -3,7 +3,7 @@ import { HouseIcon, ShieldCheckIcon, UsersIcon } from '@phosphor-icons/react';
 import { Breadcrumb } from './Breadcrumb';
 
 const meta: Meta<typeof Breadcrumb> = {
-  title: 'UI/Breadcrumb',
+  title: 'Navigation/Breadcrumb',
   component: Breadcrumb,
   parameters: {
     docs: {

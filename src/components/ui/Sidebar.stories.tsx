@@ -10,7 +10,7 @@ import { Badge } from './Badge';
 import { AppShell, Sidebar } from './Sidebar';
 
 const meta: Meta = {
-  title: 'UI/Sidebar',
+  title: 'Navigation/Sidebar',
   component: Sidebar,
   parameters: {
     docs: {

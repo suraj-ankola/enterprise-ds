@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Progress } from './Progress';
 
 const meta: Meta<typeof Progress> = {
-  title: 'UI/Progress',
+  title: 'Feedback/Progress',
   component: Progress,
   parameters: {
     docs: {

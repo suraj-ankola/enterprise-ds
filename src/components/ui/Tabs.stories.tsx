@@ -5,7 +5,7 @@ import { Badge } from './Badge';
 import { Tabs, TabPanel } from './Tabs';
 
 const meta: Meta<typeof Tabs> = {
-  title: 'UI/Tabs',
+  title: 'Navigation/Tabs',
   component: Tabs,
   argTypes: { onChange: { control: false } },
   parameters: {

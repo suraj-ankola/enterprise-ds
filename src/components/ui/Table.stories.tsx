@@ -5,7 +5,7 @@ import { Table } from './Table';
 import type { TableColumn } from './Table';
 
 const meta: Meta = {
-  title: 'UI/Table',
+  title: 'Data Display/Table',
   component: Table,
   parameters: {
     docs: {

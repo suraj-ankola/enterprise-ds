@@ -77,7 +77,7 @@ const COUNTRIES = [
 // ─── Meta ─────────────────────────────────────────────────────────────────────
 
 const meta: Meta<typeof Select> = {
-  title: 'UI/Select',
+  title: 'Core/Select',
   component: Select,
   parameters: {
     docs: {

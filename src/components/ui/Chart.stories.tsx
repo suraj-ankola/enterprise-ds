@@ -13,7 +13,7 @@ import { Badge } from './Badge';
 import { Card } from './Card';
 
 const meta: Meta<typeof Chart> = {
-  title: 'UI/Chart',
+  title: 'Data Display/Chart',
   component: Chart,
   parameters: {
     docs: {
