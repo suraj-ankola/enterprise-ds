@@ -1,6 +1,13 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function sanitizeHref(href: string): string {
+  if (/^(javascript|data):/i.test(href.trim())) return '#';
+  return href;
+}
 import {
   TextBolderIcon,
   TextItalicIcon,
@@ -206,8 +213,9 @@ export function RichTextEditor({
   function insertLink(url: string) {
     setLinkOpen(false);
     if (!url) return;
+    const safeUrl = sanitizeHref(url);
     editorRef.current?.focus();
-    document.execCommand('createLink', false, url);
+    document.execCommand('createLink', false, safeUrl);
   }
 
   const resolvedMin = minHeight ?? MIN_H[size];

@@ -5,6 +5,7 @@ import { Toast, ToastProvider, useToast } from './Toast';
 const meta: Meta = {
   title: 'Feedback/Toast',
   component: Toast,
+  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {

@@ -43,7 +43,6 @@ const AGGREGATIONS = [
   { value: 'p99',    label: 'p99 (Percentile)' },
 ];
 
-// Larger dataset to demonstrate searchable
 const COUNTRIES = [
   { value: 'au', label: 'Australia' },
   { value: 'br', label: 'Brazil' },
@@ -79,6 +78,74 @@ const COUNTRIES = [
 const meta: Meta<typeof Select> = {
   title: 'Core/Select',
   component: Select,
+  tags: ['autodocs'],
+  argTypes: {
+    options: {
+      control: false,
+      description: 'Array of `{ value, label, disabled?, group? }` option objects',
+    },
+    value: {
+      control: false,
+      description: 'Controlled selected value',
+    },
+    defaultValue: {
+      control: false,
+      description: 'Uncontrolled initial value',
+    },
+    onChange: {
+      control: false,
+      description: 'Callback fired when selection changes',
+    },
+    placeholder: {
+      control: 'text',
+      description: 'Placeholder text shown when no option is selected',
+    },
+    label: {
+      control: 'text',
+      description: 'Label rendered above the trigger',
+    },
+    helperText: {
+      control: 'text',
+      description: 'Helper text rendered below the trigger',
+    },
+    errorMessage: {
+      control: 'text',
+      description: 'Sets status to error and shows this message below the trigger',
+    },
+    status: {
+      control: 'select',
+      options: ['default', 'error', 'success'],
+      description: 'Visual status state of the select',
+    },
+    size: {
+      control: 'select',
+      options: ['sm', 'md', 'lg'],
+      description: 'Size of the trigger on the 8pt grid',
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Disables the select',
+    },
+    fullWidth: {
+      control: 'boolean',
+      description: 'Stretches the select to fill its container',
+    },
+    searchable: {
+      control: 'boolean',
+      description: 'Renders a search input at the top of the dropdown',
+    },
+  },
+  args: {
+    options:     RISK_OPTIONS,
+    placeholder: 'Select risk level',
+    label:       'Risk Level',
+    helperText:  'Select the risk classification for this vendor',
+    size:        'md',
+    status:      'default',
+    disabled:    false,
+    searchable:  false,
+    fullWidth:   false,
+  },
   parameters: {
     docs: {
       description: {
@@ -89,84 +156,55 @@ const meta: Meta<typeof Select> = {
       },
     },
   },
-  argTypes: {
-    options:      { control: false },
-    value:        { control: false },
-    defaultValue: { control: false },
-    onChange:     { control: false },
-  },
 };
 
 export default meta;
 type Story = StoryObj<typeof Select>;
 
-// ─── Stories ──────────────────────────────────────────────────────────────────
+// ─── Default ──────────────────────────────────────────────────────────────────
 
-export const Playground: Story = {
-  args: {
-    options:     RISK_OPTIONS,
-    placeholder: 'Select risk level',
-    label:       'Risk Level',
-    helperText:  'Select the risk classification for this vendor',
-    size:        'md',
-    disabled:    false,
-    searchable:  false,
-    fullWidth:   false,
-  },
-};
+export const Default: Story = {};
 
 // ─── Sizes ────────────────────────────────────────────────────────────────────
 
-export const Sizes: Story = {
-  render: () => (
-    <div className="flex flex-col gap-6">
-      {(['sm', 'md', 'lg'] as const).map(size => (
-        <Select
-          key={size}
-          options={RISK_OPTIONS}
-          size={size}
-          label={`Size: ${size}`}
-          placeholder={`${size} — select risk level`}
-          defaultValue={size === 'md' ? 'medium' : undefined}
-        />
-      ))}
-    </div>
-  ),
+export const Small: Story = {
+  args: { size: 'sm', label: 'Small', placeholder: 'sm — select risk level' },
 };
 
-// ─── Status States ────────────────────────────────────────────────────────────
+export const Medium: Story = {
+  args: { size: 'md', label: 'Medium', placeholder: 'md — select risk level' },
+};
 
-export const StatusStates: Story = {
-  render: () => (
-    <div className="flex flex-col gap-6 max-w-xs">
-      <Select
-        options={RISK_OPTIONS}
-        label="Default"
-        placeholder="Select risk level"
-        helperText="This vendor requires a risk classification."
-      />
-      <Select
-        options={RISK_OPTIONS}
-        label="Error"
-        placeholder="Select risk level"
-        errorMessage="Risk level is required before saving."
-      />
-      <Select
-        options={RISK_OPTIONS}
-        label="Success"
-        defaultValue="low"
-        status="success"
-        helperText="Risk level looks good."
-      />
-      <Select
-        options={RISK_OPTIONS}
-        label="Disabled"
-        defaultValue="medium"
-        disabled
-        helperText="This field is locked for editing."
-      />
-    </div>
-  ),
+export const Large: Story = {
+  args: { size: 'lg', label: 'Large', placeholder: 'lg — select risk level' },
+};
+
+// ─── Status states ────────────────────────────────────────────────────────────
+
+export const ErrorState: Story = {
+  args: {
+    label:        'Risk Level',
+    placeholder:  'Select risk level',
+    errorMessage: 'Risk level is required before saving.',
+  },
+};
+
+export const SuccessState: Story = {
+  args: {
+    label:       'Risk Level',
+    defaultValue: 'low',
+    status:      'success',
+    helperText:  'Risk level looks good.',
+  },
+};
+
+export const Disabled: Story = {
+  args: {
+    label:        'Risk Level',
+    defaultValue: 'medium',
+    disabled:     true,
+    helperText:   'This field is locked for editing.',
+  },
 };
 
 // ─── Searchable ───────────────────────────────────────────────────────────────
@@ -282,7 +320,7 @@ export const Controlled: Story = {
   },
 };
 
-// ─── All Sizes + Status grid ──────────────────────────────────────────────────
+// ─── All Sizes × Status ───────────────────────────────────────────────────────
 
 export const SizesAndStatus: Story = {
   name: 'All Sizes × Status',
@@ -327,7 +365,6 @@ export const SizesAndStatus: Story = {
 };
 
 // ─── Project Patterns ─────────────────────────────────────────────────────────
-// Real-world usage across all 3 portfolio products.
 
 export const ProjectPatterns: Story = {
   render: () => (

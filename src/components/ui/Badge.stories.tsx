@@ -27,17 +27,34 @@ const meta: Meta<typeof Badge> = {
     variant: {
       control: 'select',
       options: ['neutral', 'brand', 'success', 'warning', 'danger', 'info'],
+      description: 'Semantic colour variant',
     },
     appearance: {
       control: 'select',
       options: ['subtle', 'outline', 'solid'],
+      description: 'Visual fill style — subtle (tinted bg), outline (border only), solid (filled)',
     },
     size: {
       control: 'select',
       options: ['sm', 'md', 'lg'],
+      description: 'Badge size on the 8pt grid',
     },
-    dot:       { control: 'boolean' },
-    children:  { control: 'text' },
+    dot: {
+      control: 'boolean',
+      description: 'Adds a coloured status dot (only when no icon is provided)',
+    },
+    children: {
+      control: 'text',
+      description: 'Badge label text',
+    },
+    onDismiss: {
+      control: false,
+      description: 'When provided, renders an × dismiss button',
+    },
+    icon: {
+      control: false,
+      description: 'Left icon slot — pass a React node (e.g. a Phosphor icon)',
+    },
   },
   args: {
     variant:    'neutral',
@@ -50,7 +67,7 @@ const meta: Meta<typeof Badge> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'Status label, category tag, and counter pill. 6 variants × 3 appearances (subtle · outline · solid). `dot` prop adds a pulsing status indicator. `onDismiss` makes a badge dismissible. All solid combinations are WCAG AA verified in both light and dark mode.',
+        component: 'Status label, category tag, and counter pill. 6 variants × 3 appearances (subtle · outline · solid). `dot` prop adds a coloured status indicator. `onDismiss` makes a badge dismissible. All solid combinations are WCAG AA verified in both light and dark mode.',
       },
     },
   },
@@ -59,7 +76,87 @@ const meta: Meta<typeof Badge> = {
 export default meta;
 type Story = StoryObj<typeof Badge>;
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Default ──────────────────────────────────────────────────────────────────
+
+export const Default: Story = {};
+
+// ─── Variants ─────────────────────────────────────────────────────────────────
+
+export const Neutral: Story = {
+  args: { variant: 'neutral', children: 'Neutral' },
+};
+
+export const Brand: Story = {
+  args: { variant: 'brand', children: 'Brand' },
+};
+
+export const Success: Story = {
+  args: { variant: 'success', children: 'Success' },
+};
+
+export const Warning: Story = {
+  args: { variant: 'warning', children: 'Warning' },
+};
+
+export const Danger: Story = {
+  args: { variant: 'danger', children: 'Danger' },
+};
+
+export const Info: Story = {
+  args: { variant: 'info', children: 'Info' },
+};
+
+// ─── Appearances ──────────────────────────────────────────────────────────────
+
+export const Subtle: Story = {
+  args: { variant: 'brand', appearance: 'subtle', children: 'Subtle' },
+};
+
+export const Outline: Story = {
+  args: { variant: 'brand', appearance: 'outline', children: 'Outline' },
+};
+
+export const Solid: Story = {
+  args: { variant: 'brand', appearance: 'solid', children: 'Solid' },
+};
+
+// ─── Sizes ────────────────────────────────────────────────────────────────────
+
+export const Small: Story = {
+  args: { size: 'sm', variant: 'brand', children: 'Small' },
+};
+
+export const Medium: Story = {
+  args: { size: 'md', variant: 'brand', children: 'Medium' },
+};
+
+export const Large: Story = {
+  args: { size: 'lg', variant: 'brand', children: 'Large' },
+};
+
+// ─── With Dot ─────────────────────────────────────────────────────────────────
+
+export const WithDotSuccess: Story = {
+  args: { variant: 'success', dot: true, children: 'Active' },
+};
+
+export const WithDotDanger: Story = {
+  args: { variant: 'danger', dot: true, children: 'Offline' },
+};
+
+// ─── With Icon ────────────────────────────────────────────────────────────────
+
+export const WithIcon: Story = {
+  args: {
+    variant:  'success',
+    children: 'Approved',
+    icon:     <CheckCircleIcon size={12} weight="fill" />,
+  },
+};
+
+// ─── Showcase stories (render-based) ─────────────────────────────────────────
+
+const ALL_VARIANTS: BadgeVariant[] = ['neutral', 'brand', 'success', 'warning', 'danger', 'info'];
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -80,16 +177,6 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     </div>
   );
 }
-
-// ─── Playground ───────────────────────────────────────────────────────────────
-
-export const Playground: Story = {
-  args: { variant: 'brand', appearance: 'subtle', children: 'Badge' },
-};
-
-// ─── All Variants ─────────────────────────────────────────────────────────────
-
-const ALL_VARIANTS: BadgeVariant[] = ['neutral', 'brand', 'success', 'warning', 'danger', 'info'];
 
 export const AllVariants: Story = {
   name: 'Variants — All',
@@ -126,8 +213,6 @@ export const AllVariants: Story = {
   ),
 };
 
-// ─── Appearances ─────────────────────────────────────────────────────────────
-
 const ALL_APPEARANCES: BadgeAppearance[] = ['subtle', 'outline', 'solid'];
 
 export const Appearances: Story = {
@@ -135,14 +220,12 @@ export const Appearances: Story = {
   render: () => (
     <div className="bg-[var(--ds-bg-base)] p-6">
       <div className="rounded-xl border border-[var(--ds-border-base)] bg-[var(--ds-bg-surface)] overflow-hidden">
-        {/* Header */}
         <div className="grid grid-cols-[96px_repeat(3,1fr)] gap-4 px-5 py-2.5 bg-[var(--ds-bg-subtle)] border-b border-[var(--ds-border-base)]">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--ds-text-muted)]">Variant</span>
           {ALL_APPEARANCES.map(a => (
             <span key={a} className="text-[10px] font-semibold uppercase tracking-wider text-[var(--ds-text-muted)]">{a}</span>
           ))}
         </div>
-        {/* Rows */}
         {ALL_VARIANTS.map(v => (
           <div key={v} className="grid grid-cols-[96px_repeat(3,1fr)] gap-4 items-center px-5 py-3 border-b border-[var(--ds-border-base)] last:border-0">
             <span className="text-xs text-[var(--ds-text-secondary)] font-medium">{v}</span>
@@ -157,8 +240,6 @@ export const Appearances: Story = {
     </div>
   ),
 };
-
-// ─── Sizes ────────────────────────────────────────────────────────────────────
 
 export const Sizes: Story = {
   name: 'Sizes',
@@ -178,8 +259,6 @@ export const Sizes: Story = {
     </div>
   ),
 };
-
-// ─── With Dot ─────────────────────────────────────────────────────────────────
 
 export const WithDot: Story = {
   name: 'With Dot',
@@ -210,9 +289,7 @@ export const WithDot: Story = {
   ),
 };
 
-// ─── With Icon ────────────────────────────────────────────────────────────────
-
-export const WithIcon: Story = {
+export const WithIconShowcase: Story = {
   name: 'With Icon',
   render: () => (
     <div className="bg-[var(--ds-bg-base)] p-6">
@@ -240,8 +317,6 @@ export const WithIcon: Story = {
     </div>
   ),
 };
-
-// ─── Dismissible ─────────────────────────────────────────────────────────────
 
 function DismissibleDemo() {
   const TAGS = [
@@ -302,14 +377,11 @@ export const Dismissible: Story = {
   render: () => <DismissibleDemo />,
 };
 
-// ─── Real-world patterns ──────────────────────────────────────────────────────
-
 export const ProjectPatterns: Story = {
   name: '↗ Real-world Patterns',
   render: () => (
     <div className="bg-[var(--ds-bg-base)] p-6 space-y-8">
 
-      {/* Status badges */}
       <div>
         <p className="text-xs font-semibold text-[var(--ds-text-muted)] uppercase tracking-wider mb-3">
           Compliance Risk Platform — Vendor status
@@ -333,7 +405,6 @@ export const ProjectPatterns: Story = {
         </div>
       </div>
 
-      {/* IT Ops incidents */}
       <div>
         <p className="text-xs font-semibold text-[var(--ds-text-muted)] uppercase tracking-wider mb-3">
           IT Ops Copilot — Incident severity
@@ -353,18 +424,17 @@ export const ProjectPatterns: Story = {
         </div>
       </div>
 
-      {/* Analytics filters */}
       <div>
         <p className="text-xs font-semibold text-[var(--ds-text-muted)] uppercase tracking-wider mb-3">
           Analytics — Active filter chips (dismissible)
         </p>
         <div className="flex flex-wrap gap-2">
           {[
-            { label: 'Q4 2025',      variant: 'brand'   as BadgeVariant },
-            { label: 'North India',  variant: 'neutral' as BadgeVariant },
-            { label: 'B2B Segment',  variant: 'neutral' as BadgeVariant },
-            { label: 'Revenue > 1Cr',variant: 'info'    as BadgeVariant },
-            { label: 'Verified ✓',   variant: 'success' as BadgeVariant },
+            { label: 'Q4 2025',       variant: 'brand'   as BadgeVariant },
+            { label: 'North India',   variant: 'neutral' as BadgeVariant },
+            { label: 'B2B Segment',   variant: 'neutral' as BadgeVariant },
+            { label: 'Revenue > 1Cr', variant: 'info'    as BadgeVariant },
+            { label: 'Verified ✓',    variant: 'success' as BadgeVariant },
           ].map(({ label, variant }) => (
             <Badge key={label} variant={variant} appearance="outline" onDismiss={() => {}}>
               {label}
@@ -373,7 +443,6 @@ export const ProjectPatterns: Story = {
         </div>
       </div>
 
-      {/* Count / notification */}
       <div>
         <p className="text-xs font-semibold text-[var(--ds-text-muted)] uppercase tracking-wider mb-3">
           Notification counts

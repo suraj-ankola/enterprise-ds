@@ -7,6 +7,7 @@ import type { ChatMessage } from './AiChat';
 const meta: Meta = {
   title: 'AI/AiChat',
   component: ChatWindow,
+  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {

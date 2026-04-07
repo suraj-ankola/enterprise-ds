@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import {
   ShieldCheckIcon,
@@ -16,6 +17,51 @@ import { StatCard, StatCardGroup } from './StatCard';
 const meta: Meta<typeof StatCard> = {
   title: 'Data Display/StatCard',
   component: StatCard,
+  tags: ['autodocs'],
+  argTypes: {
+    label: {
+      control: 'text',
+      description: 'Metric label shown above the value',
+    },
+    value: {
+      control: 'text',
+      description: 'Formatted value string — e.g. "91%", "$4.2M", "23"',
+    },
+    delta: {
+      control: 'text',
+      description: 'Change vs previous period — e.g. "+4%", "-8"',
+    },
+    trend: {
+      control: 'select',
+      options: ['up', 'down', 'neutral'],
+      description: 'Semantic direction of the delta — drives colour',
+    },
+    positiveIsGood: {
+      control: 'boolean',
+      description: 'When false, an upward trend is shown as danger (e.g. incidents count)',
+    },
+    period: {
+      control: 'text',
+      description: 'Comparison period label — e.g. "vs last month"',
+    },
+    annotation: {
+      control: 'text',
+      description: 'Additional info shown below the value',
+    },
+    loading: {
+      control: 'boolean',
+      description: 'Shows a skeleton pulse loading state',
+    },
+  },
+  args: {
+    label: 'Compliance Score',
+    value: '91%',
+    delta: '+4%',
+    trend: 'up',
+    positiveIsGood: true,
+    period: 'vs last month',
+    loading: false,
+  },
   parameters: {
     docs: {
       description: {
@@ -25,25 +71,119 @@ const meta: Meta<typeof StatCard> = {
     },
   },
 };
+
 export default meta;
 type Story = StoryObj<typeof StatCard>;
 
-// ─── Playground ───────────────────────────────────────────────────────────────
+// ─── Default ──────────────────────────────────────────────────────────────────
 
-export const Playground: Story = {
-  render: () => (
-    <div className="p-8 bg-[var(--ds-bg-base)] max-w-sm">
-      <StatCard
-        icon={<ShieldCheckIcon size={18} />}
-        label="Compliance Score"
-        value="91%"
-        delta="+4%"
-        trend="up"
-        period="vs last month"
-        sparkline={[72, 74, 71, 76, 79, 82, 80, 84, 87, 85, 89, 91]}
-      />
-    </div>
-  ),
+export const Default: Story = {};
+
+// ─── Trend states ─────────────────────────────────────────────────────────────
+
+export const TrendUp: Story = {
+  args: {
+    label: 'Compliance Score',
+    value: '91%',
+    delta: '+4%',
+    trend: 'up',
+    period: 'vs last month',
+    icon: <ShieldCheckIcon size={18} />,
+    sparkline: [72, 74, 71, 76, 79, 82, 80, 84, 87, 85, 89, 91],
+  },
+};
+
+export const TrendDown: Story = {
+  args: {
+    label: 'Open Incidents',
+    value: '23',
+    delta: '-8',
+    trend: 'down',
+    period: 'vs last week',
+    icon: <WarningIcon size={18} />,
+    sparkline: [48, 52, 44, 50, 45, 41, 38, 35, 32, 30, 27, 23],
+  },
+};
+
+export const TrendNeutral: Story = {
+  args: {
+    label: 'Uptime SLA',
+    value: '99.94%',
+    delta: '0.00%',
+    trend: 'neutral',
+    period: '30-day rolling',
+    icon: <CheckCircleIcon size={18} />,
+  },
+};
+
+export const NegativePositive: Story = {
+  name: 'Negative positive — up is bad',
+  args: {
+    label: 'Alerts Today',
+    value: '847',
+    delta: '+12%',
+    trend: 'up',
+    positiveIsGood: false,
+    period: 'vs yesterday',
+    icon: <LightningIcon size={18} />,
+    sparkline: [620, 680, 710, 740, 700, 760, 780, 800, 820, 790, 810, 847],
+  },
+};
+
+// ─── With sparkline ───────────────────────────────────────────────────────────
+
+export const WithSparkline: Story = {
+  args: {
+    label: 'Revenue ARR',
+    value: '$4.2M',
+    delta: '+18%',
+    trend: 'up',
+    period: 'YoY',
+    icon: <CurrencyDollarIcon size={18} />,
+    sparkline: [2.8, 2.9, 3.0, 3.1, 3.2, 3.3, 3.5, 3.6, 3.8, 3.9, 4.0, 4.2],
+  },
+};
+
+// ─── Minimal ──────────────────────────────────────────────────────────────────
+
+export const Minimal: Story = {
+  args: {
+    label: 'Compliance Score',
+    value: '91%',
+    delta: undefined,
+    trend: undefined,
+    period: undefined,
+  },
+};
+
+export const WithAnnotation: Story = {
+  args: {
+    label: 'Uptime',
+    value: '99.94%',
+    annotation: '30-day rolling average',
+    delta: undefined,
+    trend: undefined,
+  },
+};
+
+// ─── Loading state ────────────────────────────────────────────────────────────
+
+export const LoadingState: Story = {
+  args: { loading: true },
+};
+
+// ─── Clickable ────────────────────────────────────────────────────────────────
+
+export const Clickable: Story = {
+  args: {
+    label: 'Compliance Score',
+    value: '91%',
+    delta: '+4%',
+    trend: 'up',
+    period: 'vs last month',
+    icon: <ShieldCheckIcon size={18} />,
+    onClick: () => alert('Navigate to compliance details'),
+  },
 };
 
 // ─── All Variants ─────────────────────────────────────────────────────────────
@@ -196,7 +336,8 @@ export const AllVariants: Story = {
 
 // ─── Clickable cards ─────────────────────────────────────────────────────────
 
-export const Clickable: Story = {
+export const ClickableCards: Story = {
+  name: 'Clickable cards',
   render: () => (
     <div className="p-8 bg-[var(--ds-bg-base)]">
       <p className="text-xs text-[var(--ds-text-muted)] mb-4">Cards with onClick become interactive — hover, focus ring, keyboard support</p>
@@ -236,7 +377,8 @@ export const Clickable: Story = {
 
 // ─── Loading state ────────────────────────────────────────────────────────────
 
-export const LoadingState: Story = {
+export const LoadingGrid: Story = {
+  name: 'Loading — skeleton grid',
   render: () => (
     <div className="p-8 bg-[var(--ds-bg-base)]">
       <StatCardGroup cols={4}>
@@ -244,32 +386,6 @@ export const LoadingState: Story = {
         <StatCard label="" value="" loading />
         <StatCard label="" value="" loading />
         <StatCard label="" value="" loading />
-      </StatCardGroup>
-    </div>
-  ),
-};
-
-// ─── No sparkline / no delta ──────────────────────────────────────────────────
-
-export const Minimal: Story = {
-  render: () => (
-    <div className="p-8 bg-[var(--ds-bg-base)]">
-      <StatCardGroup cols={3}>
-        <StatCard
-          label="Compliance Score"
-          value="91%"
-        />
-        <StatCard
-          label="Open Incidents"
-          value="23"
-          delta="-8"
-          trend="down"
-        />
-        <StatCard
-          label="Uptime"
-          value="99.94%"
-          annotation="30-day rolling average"
-        />
       </StatCardGroup>
     </div>
   ),

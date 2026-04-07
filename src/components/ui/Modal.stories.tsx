@@ -4,24 +4,70 @@ import { Button } from './Button';
 import { Input } from './Input';
 import { Modal, ConfirmModal } from './Modal';
 
+// ─── Meta ─────────────────────────────────────────────────────────────────────
+
 const meta: Meta<typeof Modal> = {
   title: 'Overlays/Modal',
   component: Modal,
-  argTypes: { onClose: { control: false } },
+  tags: ['autodocs'],
+  argTypes: {
+    open: {
+      control: 'boolean',
+      description: 'Controls whether the modal is visible',
+    },
+    onClose: {
+      control: false,
+      description: 'Callback fired when the modal requests to close (ESC, backdrop click, or close button)',
+    },
+    size: {
+      control: 'select',
+      options: ['sm', 'md', 'lg', 'xl', '2xl'],
+      description: 'Maximum width of the modal panel',
+    },
+    title: {
+      control: 'text',
+      description: 'Modal heading rendered in the header',
+    },
+    description: {
+      control: 'text',
+      description: 'Subtitle rendered below the title in the header',
+    },
+    closeOnBackdrop: {
+      control: 'boolean',
+      description: 'Click the backdrop to close the modal. Defaults to true.',
+    },
+    footer: {
+      control: false,
+      description: 'Footer slot — render your own action buttons here',
+    },
+    children: {
+      control: false,
+      description: 'Body content of the modal',
+    },
+  },
+  args: {
+    open:            false,
+    size:            'md',
+    title:           'Modal Title',
+    description:     'A short description of what this modal does.',
+    closeOnBackdrop: true,
+  },
   parameters: {
     docs: {
       description: {
-        component: 'Portal-based modal with body scroll lock and ESC-to-close. 5 sizes. `footer` slot accepts any content — use `<Button>` from the DS. `ConfirmModal` is an opinionated confirm/cancel wrapper with loading state and optional danger variant.',
+        component:
+          'Portal-based modal with body scroll lock and ESC-to-close. 5 sizes. `footer` slot accepts any content — use `<Button>` from the DS. `ConfirmModal` is an opinionated confirm/cancel wrapper with loading state and optional danger variant.',
       },
     },
   },
 };
+
 export default meta;
 type Story = StoryObj<typeof Modal>;
 
-// ─── Playground ───────────────────────────────────────────────────────────────
+// ─── Default ──────────────────────────────────────────────────────────────────
 
-export const Playground: Story = {
+export const Default: Story = {
   render: () => {
     const [open, setOpen] = useState(false);
     return (
@@ -74,7 +120,8 @@ export const Sizes: Story = {
             footer={<Button onClick={() => setActive(null)}>Close</Button>}
           >
             <p className="text-[var(--ds-text-secondary)]">
-              This is a <strong>{s}</strong> modal. Max width: {s === 'sm' ? '384px' : s === 'md' ? '448px' : s === 'lg' ? '512px' : s === 'xl' ? '576px' : '672px'}.
+              This is a <strong>{s}</strong> modal. Max width:{' '}
+              {s === 'sm' ? '384px' : s === 'md' ? '448px' : s === 'lg' ? '512px' : s === 'xl' ? '576px' : '672px'}.
             </p>
           </Modal>
         ))}
@@ -114,7 +161,7 @@ export const WithForm: Story = {
   },
 };
 
-// ─── Confirm variants ─────────────────────────────────────────────────────────
+// ─── Confirm Variants ─────────────────────────────────────────────────────────
 
 export const ConfirmVariants: Story = {
   render: () => {

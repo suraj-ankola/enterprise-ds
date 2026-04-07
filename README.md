@@ -22,6 +22,8 @@ Apply a theme by setting `data-theme="compliance"` (or `itops` / `analytics`) on
 | UI | React 19, TypeScript strict |
 | Styles | Tailwind CSS v4 (`@theme` primitives) |
 | Icons | Phosphor Icons v2 |
+| Charts | Apache ECharts + `echarts-for-react` |
+| Syntax highlight | highlight.js (core, tree-shaken) |
 | Storybook | v10 with `@storybook/nextjs-vite` |
 
 ---
@@ -46,7 +48,7 @@ Brand      ([data-theme] in globals.css)
 | Backgrounds | `--ds-bg-base` `--ds-bg-surface` `--ds-bg-subtle` `--ds-bg-raised` |
 | Text | `--ds-text-primary` `--ds-text-secondary` `--ds-text-muted` `--ds-text-on-brand` |
 | Borders | `--ds-border-base` `--ds-border-strong` `--ds-border-focus` |
-| Brand | `--ds-brand-100` … `--ds-brand-800` `--ds-brand-600` (primary action) |
+| Brand | `--ds-brand-100` … `--ds-brand-800` · `--ds-brand-600` = primary action |
 | Status | `--ds-success-*` `--ds-warning-*` `--ds-danger-*` `--ds-info-*` |
 | Motion | `--ds-duration-fast` `--ds-duration-base` `--ds-duration-slow` |
 | Z-index | `--ds-z-dropdown` `--ds-z-modal` `--ds-z-toast` `--ds-z-tooltip` |
@@ -55,9 +57,40 @@ See `src/tokens/tokens.ts` for the full typed catalogue with usage notes.
 
 ---
 
-## Component Library
+## Storybook Structure
 
-### Foundations (Storybook → Foundations)
+Storybook is the primary development environment. Stories are grouped by purpose — not by technology.
+
+```
+Foundations    Colors · Typography · Spacing · Radius · Shadows
+               Icons · Focus · Grid · Motion · States · Governance
+
+Core           Button · Input · Select · Checkbox · Radio
+               Toggle · Badge · Card
+
+Feedback       Alert · Toast · Progress · Skeleton · EmptyState
+
+Overlays       Modal · Drawer · Popover · Tooltip
+               CommandPalette · DropdownMenu
+
+Navigation     Sidebar · Breadcrumb · Tabs · Pagination · Stepper
+
+Data Display   Table · DataGrid · Chart · StatCard · Timeline
+
+Forms          TagInput · DatePicker · FilterBar · RichTextEditor
+
+Layout         PageTemplate · Avatar
+
+Content        CodeBlock
+
+AI             AiChat
+```
+
+---
+
+## Component Reference
+
+### Foundations
 
 | Story | What it covers |
 |-------|---------------|
@@ -73,9 +106,7 @@ See `src/tokens/tokens.ts` for the full typed catalogue with usage notes.
 | States | Interactive state patterns |
 | Governance | Token rules & contribution guide |
 
-### UI Components (Storybook → UI)
-
-**Core**
+### Core
 
 | Component | File | Notes |
 |-----------|------|-------|
@@ -85,76 +116,104 @@ See `src/tokens/tokens.ts` for the full typed catalogue with usage notes.
 | Checkbox | `Checkbox.tsx` | Indeterminate · 3 sizes · peer focus |
 | Radio / RadioGroup | `Radio.tsx` | Context-driven group · standalone |
 | Toggle | `Toggle.tsx` | Switch role · 3 sizes · label position |
-| Badge | `Badge.tsx` | 5 variants · solid/subtle · dot · counter |
+| Badge | `Badge.tsx` | 6 variants · solid/subtle/outline · dot · dismiss |
 | Card | `Card.tsx` | Header / Body / Footer · 4 variants · skeleton |
-| Table | `Table.tsx` | Generic `<T>` · sort · row selection · skeleton |
-| Modal | `Modal.tsx` | Portal · sizes · ConfirmModal helper |
-| Toast | `Toast.tsx` | Provider + hook · 5 variants · auto-dismiss |
-| Tabs | `Tabs.tsx` | Line / Pill / Boxed · roving tabindex |
-| Tooltip | `Tooltip.tsx` | 4 sides · delay · cloneElement trigger |
-| DropdownMenu | `DropdownMenu.tsx` | ARIA menu · keyboard nav · danger items |
-| Sidebar / AppShell | `Sidebar.tsx` | Collapsible · controlled/uncontrolled |
-| AiChat | `AiChat.tsx` | Streaming · sources · actions · empty state |
 
-**Feedback & Status**
+### Feedback
 
 | Component | File | Notes |
 |-----------|------|-------|
 | Alert | `Alert.tsx` | Inline banner · 4 variants · dismiss · action slot |
+| Toast | `Toast.tsx` | Provider + hook · 5 variants · auto-dismiss |
 | Progress | `Progress.tsx` | 5 variants · 4 sizes · indeterminate |
 | Skeleton | `Skeleton.tsx` | text / rect / circle · `SkeletonCard` · `SkeletonTable` |
+| EmptyState | `EmptyState.tsx` | 3 sizes · icon / actions / footer slots |
 
-**Overlays**
+### Overlays
 
 | Component | File | Notes |
 |-----------|------|-------|
+| Modal | `Modal.tsx` | Portal · sizes · `ConfirmModal` helper |
 | Drawer | `Drawer.tsx` | right / left / bottom · animated · portal |
 | Popover | `Popover.tsx` | 4 sides · 3 alignments · outside-click close |
+| Tooltip | `Tooltip.tsx` | 4 sides · delay · cloneElement trigger |
 | CommandPalette | `CommandPalette.tsx` | ⌘K · groups · shortcuts · full keyboard nav |
+| DropdownMenu | `DropdownMenu.tsx` | ARIA menu · keyboard nav · danger items |
 
-**Navigation**
+### Navigation
 
 | Component | File | Notes |
 |-----------|------|-------|
+| Sidebar / AppShell | `Sidebar.tsx` | Collapsible · controlled/uncontrolled |
 | Breadcrumb | `Breadcrumb.tsx` | ARIA nav · icons · custom separator |
+| Tabs | `Tabs.tsx` | Line / Pill / Boxed · roving tabindex |
 | Pagination | `Pagination.tsx` | Smart ellipsis · range info · sm/md sizes |
 | Stepper | `Stepper.tsx` | Horizontal + vertical · click-to-go-back |
 
-**Data & Forms**
+### Data Display
 
 | Component | File | Notes |
 |-----------|------|-------|
-| Avatar / AvatarGroup | `Avatar.tsx` | Image/initials/icon fallback · status dot · overlap group |
+| Table | `Table.tsx` | Generic `<T>` · sort · row selection · skeleton |
+| DataGrid | `DataGrid.tsx` | Generic `<T>` · sort · pagination · selection · `badgeCell` / `numberCell` helpers |
+| Chart | `Chart.tsx` | ECharts wrapper — see Data Visualisation section |
+| StatCard / StatCardGroup | `StatCard.tsx` | KPI card · sparkline · delta badge · loading skeleton |
+| Timeline / ActivityFeed | `Timeline.tsx` | Event log · variant dots · content slot · card wrapper |
+
+### Forms
+
+| Component | File | Notes |
+|-----------|------|-------|
 | TagInput | `TagInput.tsx` | Controlled/uncontrolled · suggestions · max count |
 | DatePicker | `DatePicker.tsx` | Full calendar · min/max · today shortcut |
+| FilterBar | `FilterBar.tsx` | Search · multi/single-select dropdowns · active chips · clear all |
+| RichTextEditor | `RichTextEditor.tsx` | contenteditable · 14 toolbar actions · word count · zero deps |
 
-### Data Visualisation (Storybook → UI/Chart)
-
-Powered by [Apache ECharts](https://echarts.apache.org) via `echarts-for-react`. All charts are **theme-aware** — colours are read from DS CSS tokens at render time and automatically respond to `data-theme` and `.dark` switches.
+### Layout
 
 | Component | File | Notes |
 |-----------|------|-------|
-| Chart | `Chart.tsx` | Base ECharts wrapper · `loading` state · height / className |
-| LineChart | `Chart.tsx` | Smooth/sharp · area fill · data zoom slider |
-| BarChart | `Chart.tsx` | Horizontal/vertical · stacked · value labels |
-| AreaChart | `Chart.tsx` | Convenience wrapper around LineChart with `showArea` |
-| DonutChart | `Chart.tsx` | Centre label/value · inner radius · legend right |
-| Sparkline | `Chart.tsx` | 48px inline chart · trend colour (positive/negative/neutral) |
-| HeatmapChart | `Chart.tsx` | visualMap slider · configurable colour range |
-| ScatterChart | `Chart.tsx` | Multi-series · variable symbol size |
+| PageTemplate | `PageTemplate.tsx` | `Page` · `PageHeader` · `PageContent` · `Section` · `TwoColumnLayout` · `ThreeColumnLayout` · `SplitPane` · `DashboardGrid` · `DashboardWidget` |
+| Avatar / AvatarGroup | `Avatar.tsx` | Image / initials / icon fallback · status dot · overlap group |
+
+### Content
+
+| Component | File | Notes |
+|-----------|------|-------|
+| CodeBlock | `CodeBlock.tsx` | highlight.js · 10 languages · line numbers · line highlight · copy button |
+
+### AI
+
+| Component | File | Notes |
+|-----------|------|-------|
+| AiChat | `AiChat.tsx` | Streaming · sources · actions · empty state |
+
+---
+
+## Data Visualisation
+
+Powered by [Apache ECharts](https://echarts.apache.org) via `echarts-for-react`. All charts read DS CSS tokens at render time — colours automatically follow `data-theme` and `.dark`.
+
+| Component | Notes |
+|-----------|-------|
+| `LineChart` | Smooth/sharp · area fill · data zoom slider |
+| `BarChart` | Horizontal/vertical · stacked · value labels |
+| `AreaChart` | LineChart with `showArea` preset |
+| `DonutChart` | Centre label/value · inner radius · legend right |
+| `Sparkline` | 48px inline · positive / negative / neutral trend |
+| `HeatmapChart` | visualMap slider · configurable colour range |
+| `ScatterChart` | Multi-series · variable symbol size |
 
 ```tsx
 import { LineChart, DonutChart, Sparkline } from '@/components/ui/Chart';
 
-// Compliance score over time
 <LineChart
-  categories={['Jan','Feb','Mar',...]}
+  categories={['Jan', 'Feb', 'Mar', ...]}
   series={[{ name: 'ISO 27001', data: [68, 72, 79, ...] }]}
   smooth
   zoom
 />
 
-// Risk distribution
 <DonutChart
   data={[
     { name: 'Critical', value: 12 },
@@ -165,8 +224,7 @@ import { LineChart, DonutChart, Sparkline } from '@/components/ui/Chart';
   centerValue="133"
 />
 
-// KPI card trend
-<Sparkline data={[72,74,79,82,85,89,91]} trend="positive" width="100%" />
+<Sparkline data={[72, 74, 79, 82, 85, 89, 91]} trend="positive" width="100%" />
 ```
 
 ---
@@ -180,10 +238,10 @@ npm install
 # Run Storybook (primary dev environment)
 npm run storybook
 
-# Type check
+# Type check — must pass zero errors
 npm run type-check
 
-# Build Storybook
+# Build Storybook static site
 npm run build-storybook
 ```
 
@@ -201,5 +259,6 @@ Storybook runs at **http://localhost:6006** by default.
 6. **Type safe** — `tsc --noEmit` must pass with zero errors before any commit.
 7. **Dark mode** — test every new token/component in `.dark` class context.
 8. **Three-theme test** — verify `data-theme` variants (compliance / itops / analytics) all look correct.
+9. **Storybook groups** — file new stories under the correct group (Core / Feedback / Overlays / etc.), not under `UI/`.
 
 See `JOURNEY.md` for the full build log and architectural decisions.

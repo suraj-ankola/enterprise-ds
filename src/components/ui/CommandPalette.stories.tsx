@@ -12,6 +12,7 @@ import type { CommandItem } from './CommandPalette';
 const meta: Meta<typeof CommandPalette> = {
   title: 'Overlays/CommandPalette',
   component: CommandPalette,
+  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {

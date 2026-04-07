@@ -1,6 +1,13 @@
 import React from 'react';
 import { CaretRightIcon } from '@phosphor-icons/react';
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function sanitizeHref(href: string): string {
+  if (/^(javascript|data):/i.test(href.trim())) return '#';
+  return href;
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface BreadcrumbItem {
@@ -48,7 +55,7 @@ export function Breadcrumb({ items, separator, className = '' }: BreadcrumbProps
                 </span>
               ) : (item.href || item.onClick) ? (
                 <a
-                  href={item.href}
+                  href={item.href ? sanitizeHref(item.href) : undefined}
                   onClick={item.onClick ? (e) => { if (!item.href) e.preventDefault(); item.onClick!(); } : undefined}
                   className={[
                     'text-sm text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)] transition-colors',

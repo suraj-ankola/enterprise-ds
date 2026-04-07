@@ -10,6 +10,7 @@ import type { FilterValue } from './FilterBar';
 const meta: Meta<typeof DataGrid> = {
   title: 'Data Display/DataGrid',
   component: DataGrid,
+  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {

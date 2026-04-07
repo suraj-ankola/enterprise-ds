@@ -5,6 +5,7 @@ import { RichTextEditor } from './RichTextEditor';
 const meta: Meta<typeof RichTextEditor> = {
   title: 'Forms/RichTextEditor',
   component: RichTextEditor,
+  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {

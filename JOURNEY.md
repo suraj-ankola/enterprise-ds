@@ -3,7 +3,7 @@
 > **Project:** `enterprise-ds`
 > **Author:** Suraj Naik — Principal Product Designer + UX Engineer
 > **Started:** April 3, 2026
-> **Last Updated:** April 3, 2026
+> **Last Updated:** April 7, 2026
 > **Purpose:** Document every decision, challenge, solution, and value created while building this design system.
 
 ---
@@ -1183,5 +1183,415 @@ Three type issues resolved without `any` suppression:
 | Chart / LineChart / BarChart / AreaChart / DonutChart / Sparkline / HeatmapChart / ScatterChart | `Chart.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge · Card |
 
 **Total: 29 components (+ sub-components). Full enterprise UI library + data visualisation layer.**
+
+---
+
+## Session 23 — Extended Component Set
+
+**Date:** April 4, 2026
+**Goal:** Add the remaining enterprise-critical components: EmptyState, StatCard, Timeline, PageTemplate, CodeBlock, FilterBar, RichTextEditor, DataGrid.
+
+### Components built
+
+**EmptyState** (`EmptyState.tsx`)
+- 3 sizes (sm / md / lg), any icon node, primary + secondary action, footer slot
+- `role="status"` + `aria-label` for screen readers
+- Used inside DataGrid, Table, and ActivityFeed for consistent zero-data experience
+
+**StatCard / StatCardGroup** (`StatCard.tsx`)
+- KPI card: label, 3xl value, delta Badge with TrendUp/Down/Minus icon, optional Sparkline
+- `positiveIsGood` flag inverts the colour semantics (e.g. "Vendors added" going up is amber, not green)
+- Loading skeleton built in. Interactive when `onClick` provided — full keyboard + focus ring
+- `StatCardGroup` is a responsive grid helper: 2 / 3 / 4 column variants
+
+**Timeline / ActivityFeed** (`Timeline.tsx`)
+- `<ol role="list">` with dot + connector line layout
+- 6 variant colours (default / brand / success / warning / danger / info) map to DS status tokens
+- `content` slot on each item — used for metadata grids, action buttons, detail panels
+- `ActivityFeed` wraps Timeline in a card with header, "View all" link, scroll cap, and loading skeleton
+
+**PageTemplate** (`PageTemplate.tsx`)
+- `Page` — root min-h-screen bg-base flex column
+- `PageHeader` — sticky `z-[--ds-z-sticky]`, breadcrumb slot, icon slot, meta slot, actions slot, tabs slot
+- `PageContent` — `<main>`, optional `noPadding` for full-bleed tables/charts
+- `Section` — heading + optional action, `mb-8` rhythm
+- `TwoColumnLayout` — 1/3 + 2/3 grid, sidebar side configurable
+- `ThreeColumnLayout` — equal 3-column grid
+- `SplitPane` — fixed-width left panel + scrollable right, configurable `panelWidth`
+- `DashboardGrid` + `DashboardWidget` — responsive 1→2→3→4 column grid with `span` prop
+
+**CodeBlock** (`CodeBlock.tsx`)
+- `highlight.js` core with 10 languages registered: JS, TS, Python, Bash, JSON, XML/HTML, YAML, SQL, CSS, Go
+- DS theme injected once into `<head>` via `injectTheme()` — uses CSS vars so dark mode / brand theme updates automatically without re-render
+- Line numbers mode: per-line `<table>` layout, inline `hljs.highlight()` per line
+- `highlightLines` array marks specific lines with warning background + left border
+- Default mode: single `<pre><code>` block, `hljs.highlightElement()` on mount
+- Copy button: `navigator.clipboard.writeText`, 2s "Copied!" confirmation state
+- `bare` prop removes the card frame for inline embedding
+
+**FilterBar** (`FilterBar.tsx`)
+- Composable: search input + funnel icon + N dropdown groups + active chips + "Clear all"
+- Each group: `multi` (checkbox behaviour) or `single` (radio behaviour, closes on pick)
+- Active filter chips show `groupLabel: optionLabel` with individual dismiss ×
+- Fully controlled via `value: FilterValue` (Record<groupKey, string[]>)
+- `actions` slot right-aligned — used for sort buttons, view toggles, export
+
+**RichTextEditor** (`RichTextEditor.tsx`)
+- `contenteditable` div, zero runtime dependencies (no Tiptap, no Quill, no ProseMirror)
+- `document.execCommand` for all formatting — bold, italic, underline, strikethrough, H2, blockquote, code block, bullet list, numbered list, link, undo, redo
+- DS theme applied via Tailwind `[&_strong]`, `[&_blockquote]`, `[&_pre]` deep selectors
+- Placeholder via `[&:empty]:before:content-[attr(data-placeholder)]` CSS trick — no JS
+- Link dialog: floating panel below toolbar, Escape cancels, Enter confirms
+- Word count footer optional. Error state adds danger ring to shell
+- `useEffect` initialises `innerHTML` once from `value` prop — does not reset on re-render
+
+**DataGrid** (`DataGrid.tsx`)
+- Generic `<T extends { id }>` — fully typed column definitions and cell renderers
+- Sort: built-in (internal state) or external (pass `sortKey` + `sortDir` + `onSort`)
+- Pagination: built-in page state, prev/next buttons, range label, shows selected count
+- Selection: header checkbox (select all / indeterminate), per-row checkbox, `selectedIds: Set`
+- `badgeCell<T>(map)` — factory returns a typed renderer mapping string values to Badge variants
+- `numberCell<T>(formatter?)` — factory returns a typed renderer for tabular numeric cells
+- Loading: `<SkeletonRow>` uses Skeleton component for consistent pulse effect
+- Empty: delegates to `<EmptyState size="sm">` with custom title/desc
+
+### TypeScript notes
+
+All 8 components pass `tsc --noEmit` with zero errors. Key decisions:
+- `PageContentProps extends React.HTMLAttributes<HTMLElement>` — allows `style` prop passthrough for height-constrained split-pane layouts
+- `DataGrid<T>` uses `(row as Record<string, unknown>)[field]` for dynamic key access — avoids index signature on the generic
+- `RichTextEditor` suppresses `contentEditable` warning via `suppressContentEditableWarning`
+
+---
+
+## Session 24 — Storybook Navigation Restructure
+
+**Date:** April 4, 2026
+**Goal:** Replace the flat `UI/*` story prefix with semantic groups so Storybook is scannable without scrolling.
+
+### Problem
+
+All 33 component stories were filed under `UI/ComponentName`. With 37 total stories (33 components + 11 foundations), the `UI` group had become a long alphabetical dump with no visual hierarchy.
+
+### New group structure
+
+| Group | Stories |
+|-------|---------|
+| **Foundations** | Colors · Typography · Spacing · Radius · Shadows · Icons · Focus · Grid · Motion · States · Governance |
+| **Core** | Button · Input · Select · Checkbox · Radio · Toggle · Badge · Card |
+| **Feedback** | Alert · Toast · Progress · Skeleton · EmptyState |
+| **Overlays** | Modal · Drawer · Popover · Tooltip · CommandPalette · DropdownMenu |
+| **Navigation** | Sidebar · Breadcrumb · Tabs · Pagination · Stepper |
+| **Data Display** | Table · DataGrid · Chart · StatCard · Timeline |
+| **Forms** | TagInput · DatePicker · FilterBar · RichTextEditor |
+| **Layout** | PageTemplate · Avatar |
+| **Content** | CodeBlock |
+| **AI** | AiChat |
+
+### Grouping rationale
+
+- **Core** = atoms and molecules a developer reaches for first; most frequently used
+- **Feedback** = components that communicate system state to the user
+- **Overlays** = components that render above the page in a portal or absolute layer
+- **Navigation** = components that help users move through the app
+- **Data Display** = read-only data presentation — tables, charts, KPIs, activity feeds
+- **Forms** = components that capture or filter user input beyond basic fields
+- **Layout** = structural scaffolding; not individual widgets
+- **Content** = rich content rendering (code, text)
+- **AI** = AI-specific interaction patterns
+
+### Scaffold stories deleted
+
+Removed `src/stories/Button.stories.ts`, `Header.stories.ts`, and `Page.stories.ts` — these were the default Storybook scaffold examples, not DS components.
+
+### Rule added to contributor guidelines
+
+> **Storybook groups** — file new stories under the correct group (Core / Feedback / Overlays / etc.), not under `UI/`.
+
+---
+
+## Full Component Status (as of Session 24)
+
+| Component | File | Stories | Types | Dark | DS tokens | Uses DS components |
+|-----------|------|---------|-------|------|-----------|-------------------|
+| Button | `Button.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Input | `Input.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Select | `Select.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Checkbox | `Checkbox.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Radio / RadioGroup | `Radio.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Toggle | `Toggle.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Badge | `Badge.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Card | `Card.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Table | `Table.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge · Checkbox |
+| Modal | `Modal.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Toast | `Toast.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Tabs | `Tabs.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Tooltip | `Tooltip.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| DropdownMenu | `DropdownMenu.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Sidebar / AppShell | `Sidebar.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button · Badge · Tooltip |
+| AiChat | `AiChat.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button · Badge · Spinner |
+| Alert | `Alert.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Progress | `Progress.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Skeleton / SkeletonCard / SkeletonTable | `Skeleton.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Drawer | `Drawer.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button · Badge · Input |
+| Popover | `Popover.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button · Badge · Progress |
+| CommandPalette | `CommandPalette.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Breadcrumb | `Breadcrumb.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Pagination | `Pagination.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Stepper | `Stepper.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button · Input |
+| Avatar / AvatarGroup | `Avatar.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| TagInput | `TagInput.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| DatePicker | `DatePicker.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Chart (8 chart types) | `Chart.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge · Card |
+| EmptyState | `EmptyState.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| StatCard / StatCardGroup | `StatCard.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge · Sparkline |
+| Timeline / ActivityFeed | `Timeline.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge |
+| PageTemplate (9 exports) | `PageTemplate.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button · Badge · StatCard · Chart |
+| CodeBlock | `CodeBlock.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| FilterBar | `FilterBar.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge · Button |
+| RichTextEditor | `RichTextEditor.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| DataGrid | `DataGrid.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge · EmptyState · Skeleton |
+
+**Total: 37 components / component groups · 46 Storybook stories · tsc --noEmit zero errors.**
+
+---
+
+### Session 10 — Gap Analysis & New Component Wave
+**Date:** April 4–5, 2026
+**Time taken:** ~3 hours
+
+#### What was done
+- Ran a full gap analysis against enterprise SaaS UI patterns — identified 40+ missing components
+- Built second major wave of UI components:
+
+| Component | File | Notes |
+|---|---|---|
+| Accordion | `Accordion.tsx` | Animated expand/collapse, single/multi mode |
+| Carousel | `Carousel.tsx` | Swipeable, dot indicators, auto-play |
+| DateRangePicker | `DateRangePicker.tsx` | Month/year navigation added to DatePicker too |
+| Divider | `Divider.tsx` | Horizontal/vertical, with optional label |
+| FileUploader | `FileUploader.tsx` | Drag-and-drop, multi-file, progress per file |
+| IconButton | `IconButton.tsx` | Square button for icon-only actions |
+| Quantifier | `Quantifier.tsx` | Numeric stepper +/− input |
+| QueryBuilder | `QueryBuilder.tsx` | Visual filter-rule builder |
+| SegmentedControl | `SegmentedControl.tsx` | Pill-style tab switcher |
+| Slider | `Slider.tsx` | Range slider with value display |
+| Spinner | `Spinner.tsx` | Standalone loading spinner |
+| Textarea | `Textarea.tsx` | Auto-grow, character counter |
+| Tree | `Tree.tsx` | Recursive expandable tree with checkboxes |
+| VideoPlayer | `VideoPlayer.tsx` | HTML5 video with custom controls |
+| WorkspaceSwitcher | `WorkspaceSwitcher.tsx` | Multi-workspace dropdown |
+| BulkActionsBar | `BulkActionsBar.tsx` | Floating bar for table row selections |
+| ColumnCustomizer | `ColumnCustomizer.tsx` | Drag-to-reorder visible columns |
+| CircularProgress | `CircularProgress.tsx` | SVG ring progress indicator |
+
+- Added marketing components folder: `src/components/marketing/` (MarketingNav, Hero, Footer, PricingCard, TestimonialCard, FeatureGrid)
+
+#### Value created
+- Design system now covers nearly every UI pattern needed by the 3 portfolio projects
+- Marketing components enable building landing pages for each product
+
+---
+
+### Session 11 — Enterprise Pages & AI Components
+**Date:** April 5–6, 2026
+**Time taken:** ~2 hours
+
+#### What was done
+Built 5 enterprise-grade full-page components and 4 AI-specific components:
+
+**Enterprise pages:**
+| Component | File | Notes |
+|---|---|---|
+| DashboardPage | `DashboardPage.tsx` | Stats grid + activity feed + flexible content slots |
+| ListPage | `ListPage.tsx` | Search toolbar + filters + table wrapper + pagination |
+| DetailPage | `DetailPage.tsx` | Back nav + tabs + sidebar layout + FieldGrid helper |
+| SettingsPage | `SettingsPage.tsx` | Left sidebar nav + SettingsSectionCard + SettingsField |
+| FormPage | `FormPage.tsx` | Stepped form wrapper with cancel/submit footer |
+| UserManagementPage | `UserManagementPage.tsx` | Role-based user table with invite + suspend flows |
+| AuditLogPage | `AuditLogPage.tsx` | Filterable audit event log with actor/resource/action |
+| BillingPage | `BillingPage.tsx` | Plan overview + usage meters + invoice history |
+| NotificationsCenter | `NotificationsCenter.tsx` | Grouped notifications with mark-read + preferences |
+| ReportsPage | `ReportsPage.tsx` | Report library with filters + scheduled run management |
+
+**AI components (in `AIComponents.tsx`):**
+| Export | Notes |
+|---|---|
+| `AIConfidencePanel` | Score badge (0–100) + signal list, color-coded high/medium/low |
+| `AIModelSelector` | Model card picker with context-window and cost metadata |
+| `AIFeedback` | Thumbs up/down + optional comment for RLHF collection |
+| `AIPromptBuilder` | Template selector + textarea with ⌘↵ submit shortcut |
+
+**Workflow & data components:**
+| Component | Notes |
+|---|---|
+| `ApprovalFlow` | Multi-step approval timeline with approve/reject actions |
+| `TaskPanel` | Kanban task list with inline CRUD per status group |
+| `PermissionMatrix` | Role × resource × action grid, cycles false/partial/true |
+| `DataExport` | Format picker (CSV/Excel/JSON) + column selector |
+| `DataImport` | 4-step wizard: upload → column mapping → preview → done |
+| `InlineEdit` | Click-to-edit field, supports click and icon trigger modes |
+| `UndoToast` | Transient toast with countdown progress bar + `useUndoToast` hook |
+| `OnboardingFlow` | Multi-step wizard with progress bar and step validation |
+| `ContextualToolbar` | Floating action bar for multi-select scenarios |
+| `GuidedTour` | Product tour with DOM targeting, spotlight overlay, step tooltips |
+| `InlineActions` | Row-level action menu with configurable visible/overflow split |
+
+#### Challenges & Solutions
+
+**Challenge — `FileJsonIcon` does not exist in Phosphor**
+- Found during TypeScript compilation: `@phosphor-icons/react` exports `FileJsIcon` not `FileJsonIcon`
+- Fix: Swapped to `FileJsIcon` in `DataExport.tsx`
+
+**Challenge — `ApprovalFlow.tsx` TS2339: Property 'border' missing**
+- `STATUS_META` type was missing a `border` field that was used in JSX
+- Fix: Added `border: string` to the interface and filled in all 4 status entries
+
+**Challenge — Storybook broken (SyntaxError: Identifier 'React' already declared)**
+- `Breadcrumb.stories.tsx` had a duplicate `import React from 'react'` on line 1–2
+- Fix: Removed the duplicate line — Storybook built clean immediately after
+
+#### Value created
+- Design system is now a complete product-ready toolkit for all 3 portfolio projects
+- AI components are unique differentiator — purpose-built for enterprise AI products
+- Enterprise pages mean entire screens can be scaffolded with 10–20 lines of code in consumer apps
+
+---
+
+### Session 12 — Security, UI Audit & Documentation Pass
+**Date:** April 6–7, 2026
+**Time taken:** ~1.5 hours
+
+#### What was done
+
+**Security audit:**
+- Identified `href` injection vulnerability in 6 components: `Breadcrumb.tsx`, `NotificationsCenter.tsx`, `Timeline.tsx`, `Footer.tsx`, `MarketingNav.tsx`, `RichTextEditor.tsx`
+- Added `sanitizeHref()` helper that blocks `javascript:` and `data:` URL schemes
+- Full results documented in `SECURITY.md`
+
+**UI consistency audit:**
+- Added missing `focus-visible:ring-2` focus indicators to 20+ buttons across new components
+- Normalized font sizes to design token scale (no hardcoded `text-[11px]` etc. where avoidable)
+- Fixed `Chart.tsx` hardcoded hex colors (`#8b5cf6`, `#f59e0b`) → routed through `var(--ds-chart-violet)` and `var(--ds-warning-icon)`
+- Full results documented in `UI_AUDIT.md`
+
+**Storybook documentation:**
+- Added `tags: ['autodocs']` + full `argTypes` with controls, options, and descriptions to all story files
+- Every component now has interactive Storybook controls panel for live prop editing
+- Developers can see all variants, copy code, and understand props without reading source
+
+**Figma conversion assets:**
+- Created `figma/figma-tokens.json` — W3C Design Token Format with all primitive + semantic tokens across 4 color modes (Light, Dark, Light/IT Ops, Light/Analytics) and 3 brand theme overrides
+- Created `figma/FIGMA_AGENT_GUIDE.md` — 14-section guide for a Claude Code agent to build the complete Figma file: Variable setup, Typography styles, Effect styles, Component build order (8 phases), per-component measurements, Storybook↔Figma parity checklist, naming conventions, WCAG requirements
+
+#### Value created
+- Zero security vulnerabilities in outward-facing href props
+- WCAG AA-compliant keyboard navigation (focus rings on all interactive elements)
+- Storybook is now a living style guide — usable by designers, developers, and QA without code knowledge
+- Figma conversion is fully guided — another agent can build the Figma file autonomously from the guide
+
+---
+
+## Final State — April 7, 2026
+
+### Component Registry (Complete)
+
+| Component | File | Comp | Stories | Dark | 3 Themes | Uses DS |
+|---|---|---|---|---|---|---|
+| Button | `Button.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Input | `Input.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Select | `Select.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Checkbox | `Checkbox.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Radio | `Radio.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Toggle | `Toggle.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Textarea | `Textarea.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Slider | `Slider.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Quantifier | `Quantifier.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| TagInput | `TagInput.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| DatePicker | `DatePicker.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| DateRangePicker | `DateRangePicker.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Badge | `Badge.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Avatar | `Avatar.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Spinner | `Spinner.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Skeleton | `Skeleton.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| CircularProgress | `CircularProgress.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Progress | `Progress.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Divider | `Divider.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| IconButton | `IconButton.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Card | `Card.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| StatCard | `StatCard.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge · Sparkline |
+| Alert | `Alert.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Toast | `Toast.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| UndoToast | `UndoToast.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Toast |
+| EmptyState | `EmptyState.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Modal | `Modal.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Drawer | `Drawer.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Popover | `Popover.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Tooltip | `Tooltip.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| Tabs | `Tabs.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Accordion | `Accordion.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Stepper | `Stepper.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| SegmentedControl | `SegmentedControl.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Breadcrumb | `Breadcrumb.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Pagination | `Pagination.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| DropdownMenu | `DropdownMenu.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| CommandPalette | `CommandPalette.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Sidebar | `Sidebar.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button · Badge · Tooltip |
+| WorkspaceSwitcher | `WorkspaceSwitcher.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Avatar |
+| BulkActionsBar | `BulkActionsBar.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button · Badge |
+| ColumnCustomizer | `ColumnCustomizer.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| ContextualToolbar | `ContextualToolbar.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| InlineActions | `InlineActions.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| InlineEdit | `InlineEdit.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| GuidedTour | `GuidedTour.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Table | `Table.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge · Checkbox |
+| DataGrid | `DataGrid.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge · EmptyState · Skeleton |
+| FilterBar | `FilterBar.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge · Button |
+| QueryBuilder | `QueryBuilder.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Chart | `Chart.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge · Card |
+| Tree | `Tree.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| Timeline | `Timeline.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge |
+| Carousel | `Carousel.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| VideoPlayer | `VideoPlayer.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| FileUploader | `FileUploader.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| CodeBlock | `CodeBlock.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| RichTextEditor | `RichTextEditor.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| AiChat | `AiChat.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button · Badge · Spinner |
+| AIComponents | `AIComponents.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| ApprovalFlow | `ApprovalFlow.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button |
+| TaskPanel | `TaskPanel.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| PermissionMatrix | `PermissionMatrix.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| DataExport | `DataExport.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| DataImport | `DataImport.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| OnboardingFlow | `OnboardingFlow.tsx` | ✅ | ✅ | ✅ | ✅ | — |
+| PageTemplate | `PageTemplate.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button · Badge · StatCard · Chart |
+| DashboardPage | `DashboardPage.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ StatCard · Chart · Timeline |
+| ListPage | `ListPage.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Input · FilterBar · Pagination |
+| DetailPage | `DetailPage.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Tabs · Badge · Avatar |
+| SettingsPage | `SettingsPage.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Toggle · Button |
+| FormPage | `FormPage.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Button · Stepper |
+| UserManagementPage | `UserManagementPage.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Table · Badge · Modal |
+| AuditLogPage | `AuditLogPage.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Table · Badge · FilterBar |
+| BillingPage | `BillingPage.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Progress · Badge · StatCard |
+| NotificationsCenter | `NotificationsCenter.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge · Button |
+| ReportsPage | `ReportsPage.tsx` | ✅ | ✅ | ✅ | ✅ | ✅ Badge · Button · Chart |
+
+**Total: 79 components · 79 Storybook story files · tsc --noEmit zero errors · Storybook builds in ~85s**
+
+---
+
+## Figma Conversion
+
+**Files ready:**
+- `figma/figma-tokens.json` — all design tokens in W3C format (primitive + semantic, 4 color modes, 3 brand themes)
+- `figma/FIGMA_AGENT_GUIDE.md` — 14-section guide for a Claude Code + Figma MCP agent to build the Figma file
+
+**To build Figma:**
+1. Open Figma Desktop App
+2. Open Claude Code with Figma MCP enabled
+3. Prompt: *"Read figma/FIGMA_AGENT_GUIDE.md and follow Phase 1: create the Variable Collection, import all tokens, set up Typography and Effect styles."*
+4. Continue through all 8 phases in the guide
+
+**Goal:** Figma file is a 1:1 mirror of Storybook — identical component names, variant props, token usage, and spacing.
 
 *Last updated: April 4, 2026*

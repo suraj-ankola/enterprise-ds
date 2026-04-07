@@ -4,6 +4,7 @@ import { CodeBlock } from './CodeBlock';
 const meta: Meta<typeof CodeBlock> = {
   title: 'Content/CodeBlock',
   component: CodeBlock,
+  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {

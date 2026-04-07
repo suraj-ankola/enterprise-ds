@@ -1,29 +1,63 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
-import { FunnelIcon, BellIcon, CalendarIcon, InfoIcon } from '@phosphor-icons/react';
+import { FunnelIcon, BellIcon, InfoIcon } from '@phosphor-icons/react';
 import { Button } from './Button';
 import { Badge } from './Badge';
 import { Checkbox } from './Checkbox';
 import { Progress } from './Progress';
 import { Popover } from './Popover';
 
+// ─── Meta ─────────────────────────────────────────────────────────────────────
+
 const meta: Meta<typeof Popover> = {
   title: 'Overlays/Popover',
   component: Popover,
+  tags: ['autodocs'],
+  argTypes: {
+    trigger: {
+      control: false,
+      description: 'Any ReactElement — props (aria-expanded, onClick) are injected via cloneElement',
+    },
+    children: {
+      control: false,
+      description: 'Content rendered inside the popover panel',
+    },
+    side: {
+      control: 'select',
+      options: ['top', 'bottom', 'left', 'right'],
+      description: 'Which side of the trigger the popover appears on',
+    },
+    align: {
+      control: 'select',
+      options: ['start', 'center', 'end'],
+      description: 'Alignment of the popover relative to the trigger',
+    },
+    width: {
+      control: 'text',
+      description: 'CSS width of the popover panel (e.g. "280px")',
+    },
+  },
+  args: {
+    side:  'bottom',
+    align: 'start',
+    width: '280px',
+  },
   parameters: {
     docs: {
       description: {
-        component: 'Non-modal anchored overlay. Trigger is any `ReactElement` — props injected via `cloneElement`. 4 sides × 3 alignment positions. Closes on outside click or Escape. Use for filters, quick info, and contextual pickers.',
+        component:
+          'Non-modal anchored overlay. Trigger is any `ReactElement` — props injected via `cloneElement`. 4 sides × 3 alignment positions. Closes on outside click or Escape. Use for filters, quick info, and contextual pickers.',
       },
     },
   },
 };
+
 export default meta;
 type Story = StoryObj<typeof Popover>;
 
-// ─── Playground ───────────────────────────────────────────────────────────────
+// ─── Default ──────────────────────────────────────────────────────────────────
 
-export const Playground: Story = {
+export const Default: Story = {
   render: () => (
     <div className="p-16 flex justify-center">
       <Popover
@@ -42,6 +76,49 @@ export const Playground: Story = {
             <Button size="sm" variant="ghost">Reset</Button>
             <Button size="sm">Apply</Button>
           </div>
+        </div>
+      </Popover>
+    </div>
+  ),
+};
+
+// ─── Sides ────────────────────────────────────────────────────────────────────
+
+export const SideTop: Story = {
+  name: 'Side — top',
+  render: () => (
+    <div className="p-24 flex justify-center">
+      <Popover
+        trigger={<Button variant="secondary">Hover above</Button>}
+        side="top"
+        width="200px"
+      >
+        <div className="p-3">
+          <p className="text-sm text-[var(--ds-text-secondary)]">Popover appears above the trigger.</p>
+        </div>
+      </Popover>
+    </div>
+  ),
+};
+
+export const SideRight: Story = {
+  name: 'Side — right',
+  render: () => (
+    <div className="p-16 flex justify-center">
+      <Popover
+        trigger={
+          <button type="button" className="text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)] transition-colors focus-visible:outline-none">
+            <InfoIcon size={18} />
+          </button>
+        }
+        side="right"
+        width="220px"
+      >
+        <div className="p-3">
+          <p className="text-xs font-semibold text-[var(--ds-text-primary)] mb-1">Risk score formula</p>
+          <p className="text-xs text-[var(--ds-text-muted)] leading-relaxed">
+            Calculated from framework compliance (40%), audit recency (35%), and incident history (25%).
+          </p>
         </div>
       </Popover>
     </div>
@@ -103,9 +180,9 @@ export const AllVariants: Story = {
                 Notifications
               </p>
               {[
-                { title: 'Audit overdue', desc: 'Beta Systems · 14 days past due', variant: 'warning' as const },
-                { title: 'Integration failed', desc: 'Slack webhook · 401 Unauthorized', variant: 'danger' as const },
-                { title: 'New framework', desc: 'ISO 27001:2022 mapping available', variant: 'info' as const },
+                { title: 'Audit overdue',      desc: 'Beta Systems · 14 days past due',  variant: 'warning' as const },
+                { title: 'Integration failed', desc: 'Slack webhook · 401 Unauthorized', variant: 'danger'  as const },
+                { title: 'New framework',      desc: 'ISO 27001:2022 mapping available', variant: 'info'    as const },
               ].map(n => (
                 <button key={n.title} type="button"
                   className="w-full px-4 py-3 flex gap-3 items-start hover:bg-[var(--ds-bg-subtle)] transition-colors text-left">

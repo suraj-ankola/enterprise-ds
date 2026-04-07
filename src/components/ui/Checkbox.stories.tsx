@@ -1,16 +1,58 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Checkbox } from './Checkbox';
 
 const meta: Meta<typeof Checkbox> = {
   title: 'Core/Checkbox',
   component: Checkbox,
+  tags: ['autodocs'],
   argTypes: {
-    onChange: { control: false },
+    size: {
+      control: 'select',
+      options: ['sm', 'md', 'lg'],
+      description: 'Checkbox size — box, icon, and text scale together',
+    },
+    label: {
+      control: 'text',
+      description: 'Label text rendered next to the checkbox',
+    },
+    helperText: {
+      control: 'text',
+      description: 'Supporting text below the label (replaced by errorMessage when set)',
+    },
+    errorMessage: {
+      control: 'text',
+      description: 'Error message — replaces helperText and applies danger border color',
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Prevents interaction and reduces opacity',
+    },
+    defaultChecked: {
+      control: 'boolean',
+      description: 'Initial checked state for uncontrolled usage',
+    },
+    indeterminate: {
+      control: 'boolean',
+      description: 'Shows a dash — used for "select all" when some rows are selected',
+    },
+    onChange: {
+      control: false,
+      description: 'Callback fired with the new checked boolean on every change',
+    },
+  },
+  args: {
+    label:          'Accept terms and conditions',
+    helperText:     'You must agree before proceeding.',
+    size:           'md',
+    disabled:       false,
+    indeterminate:  false,
+    defaultChecked: false,
   },
   parameters: {
     docs: {
       description: {
-        component: 'Controlled/uncontrolled checkbox. Supports `indeterminate` state (for select-all patterns). Hidden native input + custom visual — focus ring via CSS `peer` variant. 3 sizes. Renders a stable `<CheckIcon>` at all times (opacity toggle) to prevent layout shift.',
+        component: 'Controlled/uncontrolled checkbox. Supports `indeterminate` state for select-all patterns. Hidden native input + custom visual with focus ring via CSS `peer` variant. 3 sizes. Renders a stable `<CheckIcon>` at all times (opacity toggle) to prevent layout shift.',
       },
     },
   },
@@ -18,16 +60,64 @@ const meta: Meta<typeof Checkbox> = {
 export default meta;
 type Story = StoryObj<typeof Checkbox>;
 
-export const Playground: Story = {
+// ─── Default ──────────────────────────────────────────────────────────────────
+
+export const Default: Story = {};
+
+// ─── States ───────────────────────────────────────────────────────────────────
+
+export const Unchecked: Story = {
+  args: { label: 'Unchecked', defaultChecked: false },
+};
+
+export const Checked: Story = {
+  args: { label: 'Checked', defaultChecked: true },
+};
+
+export const Indeterminate: Story = {
+  args: { label: 'Select all (indeterminate)', indeterminate: true },
+};
+
+export const Disabled: Story = {
+  args: { label: 'Disabled', disabled: true },
+};
+
+export const DisabledChecked: Story = {
+  args: { label: 'Disabled checked', disabled: true, defaultChecked: true },
+};
+
+// ─── With text ────────────────────────────────────────────────────────────────
+
+export const WithHelperText: Story = {
   args: {
-    label:         'Accept terms and conditions',
-    helperText:    'You must agree before proceeding.',
-    size:          'md',
-    disabled:      false,
-    indeterminate: false,
-    defaultChecked: false,
+    label:      'Email notifications',
+    helperText: 'Receive weekly digest and alerts.',
+    defaultChecked: true,
   },
 };
+
+export const WithError: Story = {
+  args: {
+    label:        'Accept terms and conditions',
+    errorMessage: 'You must accept the terms to continue.',
+  },
+};
+
+// ─── Sizes ────────────────────────────────────────────────────────────────────
+
+export const Small: Story = {
+  args: { size: 'sm', label: 'Small', defaultChecked: true },
+};
+
+export const Medium: Story = {
+  args: { size: 'md', label: 'Medium', defaultChecked: true },
+};
+
+export const Large: Story = {
+  args: { size: 'lg', label: 'Large', defaultChecked: true },
+};
+
+// ─── Showcase ─────────────────────────────────────────────────────────────────
 
 export const AllVariants: Story = {
   render: () => (
@@ -75,4 +165,15 @@ export const AllVariants: Story = {
       </div>
     </div>
   ),
+};
+
+export const Playground: Story = {
+  args: {
+    label:          'Accept terms and conditions',
+    helperText:     'You must agree before proceeding.',
+    size:           'md',
+    disabled:       false,
+    indeterminate:  false,
+    defaultChecked: false,
+  },
 };

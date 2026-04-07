@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { Button } from './Button';
@@ -8,14 +9,46 @@ import type { Step } from './Stepper';
 const meta: Meta<typeof Stepper> = {
   title: 'Navigation/Stepper',
   component: Stepper,
+  tags: ['autodocs'],
+  argTypes: {
+    currentStep: {
+      control: 'number',
+      description: 'Index of the active step (0-based)',
+    },
+    orientation: {
+      control: 'select',
+      options: ['horizontal', 'vertical'],
+      description: 'Layout direction of the stepper',
+    },
+    steps: {
+      control: false,
+      description: 'Array of Step objects defining the flow',
+    },
+    onStepClick: {
+      control: false,
+      description: 'Called with the step index when a completed step is clicked',
+    },
+  },
+  args: {
+    currentStep: 1,
+    orientation: 'horizontal',
+    steps: [
+      { key: 'info',       label: 'Basic info',      description: 'Name, website, region' },
+      { key: 'compliance', label: 'Compliance',       description: 'Frameworks and certifications' },
+      { key: 'contacts',   label: 'Contacts',         description: 'Security contacts', optional: true },
+      { key: 'review',     label: 'Review & submit',  description: 'Confirm before onboarding' },
+    ],
+  },
   parameters: {
     docs: {
       description: {
-        component: 'Multi-step progress indicator. Horizontal and vertical orientations. Status is auto-computed from `currentStep` index or overridden per-step. Completed steps are clickable via `onStepClick`. Connector line colour tracks completion.',
+        component:
+          'Multi-step progress indicator. Horizontal and vertical orientations. Status is auto-computed from `currentStep` index or overridden per-step. Completed steps are clickable via `onStepClick`. Connector line colour tracks completion.',
       },
     },
   },
 };
+
 export default meta;
 type Story = StoryObj<typeof Stepper>;
 
@@ -33,6 +66,34 @@ const INCIDENT_STEPS: Step[] = [
   { key: 'validate', label: 'Validated' },
   { key: 'resolved', label: 'Resolved' },
 ];
+
+// ─── Default ──────────────────────────────────────────────────────────────────
+
+export const Default: Story = {};
+
+// ─── Orientations ─────────────────────────────────────────────────────────────
+
+export const Horizontal: Story = {
+  args: { orientation: 'horizontal', currentStep: 2 },
+};
+
+export const Vertical: Story = {
+  args: { orientation: 'vertical', currentStep: 1 },
+};
+
+// ─── Step states ──────────────────────────────────────────────────────────────
+
+export const FirstStep: Story = {
+  args: { currentStep: 0 },
+};
+
+export const LastStep: Story = {
+  args: { currentStep: VENDOR_STEPS.length - 1 },
+};
+
+export const AllComplete: Story = {
+  args: { currentStep: VENDOR_STEPS.length, steps: INCIDENT_STEPS },
+};
 
 // ─── Playground ───────────────────────────────────────────────────────────────
 

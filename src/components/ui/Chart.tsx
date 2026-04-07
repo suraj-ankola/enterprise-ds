@@ -38,8 +38,8 @@ function useDSColors() {
       cssVar('--ds-warning-icon', '#d97706'),
       cssVar('--ds-danger-icon',  '#dc2626'),
       cssVar('--ds-info-icon',    '#0284c7'),
-      '#8b5cf6', // violet — not in every theme, hardcoded fallback
-      '#f59e0b',
+      cssVar('--ds-chart-violet', '#8b5cf6'), // violet — not in every theme, fallback only
+      cssVar('--ds-warning-icon',  '#f59e0b'),
     ],
   }), []);
 }

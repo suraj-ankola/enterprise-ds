@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from '@storybook/react';
 import {
   ShieldCheckIcon,
   WarningIcon,
@@ -25,12 +25,21 @@ const meta: Meta<typeof Card> = {
     variant: {
       control: 'select',
       options: ['default', 'outlined', 'elevated', 'ghost'],
+      description: 'Visual style of the card surface',
     },
     padding: {
       control: 'select',
       options: ['none', 'sm', 'md', 'lg'],
+      description: 'Inner padding on the 8pt grid',
     },
-    clickable: { control: 'boolean' },
+    clickable: {
+      control: 'boolean',
+      description: 'Adds hover/focus affordance and keyboard activation',
+    },
+    children: {
+      control: false,
+      description: 'Card content — compose with CardHeader, CardBody, CardFooter, etc.',
+    },
   },
   args: {
     variant: 'default',
@@ -41,7 +50,8 @@ const meta: Meta<typeof Card> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'Compound surface container. Sub-components: `CardHeader`, `CardBody`, `CardFooter`, `CardDivider`, `CardSkeleton`. 4 variants (default · outlined · elevated · ghost). `clickable` prop adds hover affordance and keyboard activation. Skeleton included for loading states.',
+        component:
+          'Compound surface container. Sub-components: `CardHeader`, `CardBody`, `CardFooter`, `CardDivider`, `CardSkeleton`. 4 variants (default · outlined · elevated · ghost). `clickable` prop adds hover affordance and keyboard activation. Skeleton included for loading states.',
       },
     },
   },
@@ -50,7 +60,7 @@ const meta: Meta<typeof Card> = {
 export default meta;
 type Story = StoryObj<typeof Card>;
 
-// ─── Variants ─────────────────────────────────────────────────────────────────
+// ─── Default ──────────────────────────────────────────────────────────────────
 
 export const Default: Story = {
   render: (args) => (
@@ -62,6 +72,8 @@ export const Default: Story = {
     </Card>
   ),
 };
+
+// ─── Variants ─────────────────────────────────────────────────────────────────
 
 export const Outlined: Story = {
   render: (args) => (

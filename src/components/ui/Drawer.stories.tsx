@@ -5,23 +5,76 @@ import { Input } from './Input';
 import { Badge } from './Badge';
 import { Drawer } from './Drawer';
 
+// ─── Meta ─────────────────────────────────────────────────────────────────────
+
 const meta: Meta<typeof Drawer> = {
   title: 'Overlays/Drawer',
   component: Drawer,
+  tags: ['autodocs'],
+  argTypes: {
+    open: {
+      control: 'boolean',
+      description: 'Controls whether the drawer is visible',
+    },
+    onClose: {
+      control: false,
+      description: 'Callback fired when the drawer requests to close (ESC, backdrop click, or close button)',
+    },
+    side: {
+      control: 'select',
+      options: ['right', 'left', 'bottom'],
+      description: 'Which edge the drawer slides in from',
+    },
+    size: {
+      control: 'select',
+      options: ['sm', 'md', 'lg', 'xl', 'full'],
+      description: 'Width (for right/left) or height (for bottom) of the drawer panel',
+    },
+    title: {
+      control: 'text',
+      description: 'Heading rendered in the drawer header',
+    },
+    description: {
+      control: 'text',
+      description: 'Subtitle rendered below the title in the header',
+    },
+    closeOnBackdrop: {
+      control: 'boolean',
+      description: 'Click the backdrop to close the drawer. Defaults to true.',
+    },
+    footer: {
+      control: false,
+      description: 'Footer slot — render your own action buttons here',
+    },
+    children: {
+      control: false,
+      description: 'Body content of the drawer',
+    },
+  },
+  args: {
+    open:            false,
+    side:            'right',
+    size:            'md',
+    title:           'Drawer Title',
+    description:     'A subtitle or context for this panel.',
+    closeOnBackdrop: true,
+  },
   parameters: {
     docs: {
       description: {
-        component: 'Slide-in side panel (right · left · bottom). Portal-based with body scroll lock, ESC-to-close, and backdrop dismiss. Animated open/close via CSS `transition-transform`. `footer` slot for action buttons.',
+        component:
+          'Slide-in side panel (right · left · bottom). Portal-based with body scroll lock, ESC-to-close, and backdrop dismiss. Animated open/close via CSS `transition-transform`. `footer` slot for action buttons.',
       },
     },
   },
 };
+
 export default meta;
 type Story = StoryObj<typeof Drawer>;
 
-// ─── Playground ───────────────────────────────────────────────────────────────
+// ─── Default ──────────────────────────────────────────────────────────────────
 
-export const Playground: Story = {
+export const Default: Story = {
   render: () => {
     const [open, setOpen] = useState(false);
     return (

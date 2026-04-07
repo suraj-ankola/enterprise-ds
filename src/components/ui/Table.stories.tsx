@@ -7,6 +7,7 @@ import type { TableColumn } from './Table';
 const meta: Meta = {
   title: 'Data Display/Table',
   component: Table,
+  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {

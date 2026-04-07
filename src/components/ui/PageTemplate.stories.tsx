@@ -31,6 +31,7 @@ import type { TimelineItem } from './Timeline';
 const meta: Meta<typeof PageHeader> = {
   title: 'Layout/PageTemplate',
   component: PageHeader,
+  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {

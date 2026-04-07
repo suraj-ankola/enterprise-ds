@@ -15,6 +15,7 @@ import { Card } from './Card';
 const meta: Meta<typeof Chart> = {
   title: 'Data Display/Chart',
   component: Chart,
+  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {

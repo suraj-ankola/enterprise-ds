@@ -12,6 +12,7 @@ import { AppShell, Sidebar } from './Sidebar';
 const meta: Meta = {
   title: 'Navigation/Sidebar',
   component: Sidebar,
+  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {

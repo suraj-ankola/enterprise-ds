@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import {
   ShieldCheckIcon,
@@ -19,6 +20,26 @@ import type { TimelineItem } from './Timeline';
 const meta: Meta<typeof Timeline> = {
   title: 'Data Display/Timeline',
   component: Timeline,
+  tags: ['autodocs'],
+  argTypes: {
+    layout: {
+      control: 'select',
+      options: ['left', 'alternate'],
+      description: 'Horizontal layout of the timeline items',
+    },
+    lastNoLine: {
+      control: 'boolean',
+      description: 'Remove the connector line on the last item',
+    },
+    items: {
+      control: false,
+      description: 'Array of TimelineItem objects',
+    },
+  },
+  args: {
+    layout: 'left',
+    lastNoLine: true,
+  },
   parameters: {
     docs: {
       description: {
@@ -28,6 +49,7 @@ const meta: Meta<typeof Timeline> = {
     },
   },
 };
+
 export default meta;
 type Story = StoryObj<typeof Timeline>;
 
@@ -177,12 +199,15 @@ const VENDOR_ACTIVITY: TimelineItem[] = [
   },
 ];
 
-// ─── Playground ───────────────────────────────────────────────────────────────
+// ─── Default ──────────────────────────────────────────────────────────────────
 
-export const Playground: Story = {
-  render: () => (
+export const Default: Story = {
+  args: {
+    items: COMPLIANCE_AUDIT,
+  },
+  render: (args) => (
     <div className="p-8 max-w-lg bg-[var(--ds-bg-base)]">
-      <Timeline items={COMPLIANCE_AUDIT} />
+      <Timeline {...args} />
     </div>
   ),
 };

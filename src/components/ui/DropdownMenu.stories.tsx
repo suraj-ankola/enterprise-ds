@@ -7,37 +7,167 @@ import {
 import { Button } from './Button';
 import { DropdownMenu } from './DropdownMenu';
 
+// ─── Meta ─────────────────────────────────────────────────────────────────────
+
 const meta: Meta<typeof DropdownMenu> = {
   title: 'Overlays/DropdownMenu',
   component: DropdownMenu,
+  tags: ['autodocs'],
+  argTypes: {
+    trigger: {
+      control: false,
+      description: 'Any ReactElement — aria-haspopup, aria-expanded, and onClick are injected via cloneElement',
+    },
+    items: {
+      control: false,
+      description: 'Array of `MenuItem` objects. Each can be an action item, separator, or label group header.',
+    },
+    align: {
+      control: 'select',
+      options: ['start', 'end'],
+      description: 'Horizontal alignment of the menu relative to the trigger',
+    },
+    side: {
+      control: 'select',
+      options: ['bottom', 'top'],
+      description: 'Which side of the trigger the menu appears on',
+    },
+  },
+  args: {
+    align: 'start',
+    side:  'bottom',
+  },
   parameters: {
     docs: {
       description: {
-        component: 'ARIA `role="menu"` dropdown with full keyboard navigation (Arrow · Home · End · Escape · Tab). Trigger is any `ReactElement` — props injected via `cloneElement`. Items support `separator`, `label`, and `danger` types. `align` and `side` control popup placement.',
+        component:
+          'ARIA `role="menu"` dropdown with full keyboard navigation (Arrow · Home · End · Escape · Tab). Trigger is any `ReactElement` — props injected via `cloneElement`. Items support `separator`, `label`, and `danger` types. `align` and `side` control popup placement.',
       },
     },
   },
 };
+
 export default meta;
 type Story = StoryObj<typeof DropdownMenu>;
 
-export const Playground: Story = {
+// ─── Default ──────────────────────────────────────────────────────────────────
+
+export const Default: Story = {
   render: () => (
     <div className="p-8">
       <DropdownMenu
         trigger={<Button variant="secondary">Actions <CaretDownIcon size={14} /></Button>}
         items={[
-          { key: 'edit',   label: 'Edit vendor',  icon: <PencilSimpleIcon size={15} />, onClick: () => alert('edit') },
-          { key: 'copy',   label: 'Copy ID',       icon: <CopyIcon size={15} />,          onClick: () => alert('copy') },
-          { key: 'view',   label: 'Open in new tab', icon: <ArrowSquareOutIcon size={15} /> },
-          { key: 'sep-1',  type: 'separator' },
-          { key: 'archive',label: 'Archive',       icon: <ArchiveIcon size={15} />,        onClick: () => alert('archive') },
-          { key: 'delete', label: 'Delete vendor', icon: <TrashIcon size={15} />, danger: true, onClick: () => alert('delete') },
+          { key: 'edit',    label: 'Edit vendor',     icon: <PencilSimpleIcon size={15} />, onClick: () => alert('edit') },
+          { key: 'copy',    label: 'Copy ID',          icon: <CopyIcon size={15} />,          onClick: () => alert('copy') },
+          { key: 'view',    label: 'Open in new tab',  icon: <ArrowSquareOutIcon size={15} /> },
+          { key: 'sep-1',   type: 'separator' },
+          { key: 'archive', label: 'Archive',          icon: <ArchiveIcon size={15} />,        onClick: () => alert('archive') },
+          { key: 'delete',  label: 'Delete vendor',    icon: <TrashIcon size={15} />, danger: true, onClick: () => alert('delete') },
         ]}
       />
     </div>
   ),
 };
+
+// ─── Icon Trigger (Kebab) ─────────────────────────────────────────────────────
+
+export const IconTrigger: Story = {
+  render: () => (
+    <div className="p-8">
+      <DropdownMenu
+        trigger={
+          <button
+            type="button"
+            className="p-1.5 rounded-md text-[var(--ds-text-muted)] hover:text-[var(--ds-text-primary)] hover:bg-[var(--ds-bg-subtle)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-brand-500)]"
+            aria-label="Row actions"
+          >
+            <DotsThreeVerticalIcon size={18} weight="bold" />
+          </button>
+        }
+        items={[
+          { key: 'edit',   label: 'Edit',   icon: <PencilSimpleIcon size={15} /> },
+          { key: 'export', label: 'Export', icon: <DownloadSimpleIcon size={15} /> },
+          { key: 'sep',    type: 'separator' },
+          { key: 'delete', label: 'Delete', icon: <TrashIcon size={15} />, danger: true },
+        ]}
+      />
+    </div>
+  ),
+};
+
+// ─── With Section Labels ──────────────────────────────────────────────────────
+
+export const WithSectionLabels: Story = {
+  render: () => (
+    <div className="p-8">
+      <DropdownMenu
+        trigger={<Button variant="secondary" size="sm">Options <CaretDownIcon size={12} /></Button>}
+        items={[
+          { key: 'lbl-1',   type: 'label',     label: 'View' },
+          { key: 'view',    label: 'Overview',  icon: <ArrowSquareOutIcon size={15} /> },
+          { key: 'export',  label: 'Export CSV', icon: <DownloadSimpleIcon size={15} /> },
+          { key: 'sep',     type: 'separator' },
+          { key: 'lbl-2',   type: 'label',     label: 'Manage' },
+          { key: 'edit',    label: 'Edit',      icon: <PencilSimpleIcon size={15} /> },
+          { key: 'archive', label: 'Archive',   icon: <ArchiveIcon size={15} /> },
+          { key: 'sep2',    type: 'separator' },
+          { key: 'delete',  label: 'Delete',    icon: <TrashIcon size={15} />, danger: true },
+        ]}
+      />
+    </div>
+  ),
+};
+
+// ─── Align End (User Menu) ────────────────────────────────────────────────────
+
+export const AlignEnd: Story = {
+  name: 'Align end — user menu',
+  render: () => (
+    <div className="p-8 flex justify-end">
+      <DropdownMenu
+        align="end"
+        trigger={
+          <button
+            type="button"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-[var(--ds-text-primary)] hover:bg-[var(--ds-bg-subtle)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-brand-500)]"
+          >
+            <span className="h-6 w-6 rounded-full bg-[var(--ds-brand-600)] flex items-center justify-center text-xs text-white font-semibold">S</span>
+            Suraj
+            <CaretDownIcon size={12} className="text-[var(--ds-text-muted)]" />
+          </button>
+        }
+        items={[
+          { key: 'profile',  label: 'Profile',  icon: <UserIcon size={15} /> },
+          { key: 'settings', label: 'Settings', icon: <PencilSimpleIcon size={15} /> },
+          { key: 'sep',      type: 'separator' },
+          { key: 'signout',  label: 'Sign out', icon: <SignOutIcon size={15} />, danger: true },
+        ]}
+      />
+    </div>
+  ),
+};
+
+// ─── Disabled Items ───────────────────────────────────────────────────────────
+
+export const DisabledItems: Story = {
+  render: () => (
+    <div className="p-8">
+      <DropdownMenu
+        trigger={<Button variant="secondary" size="sm">Actions <CaretDownIcon size={12} /></Button>}
+        items={[
+          { key: 'edit',    label: 'Edit vendor',   icon: <PencilSimpleIcon size={15} /> },
+          { key: 'approve', label: 'Approve',        icon: <ArchiveIcon size={15} />, disabled: true },
+          { key: 'export',  label: 'Export report',  icon: <DownloadSimpleIcon size={15} />, disabled: true },
+          { key: 'sep',     type: 'separator' },
+          { key: 'delete',  label: 'Delete',         icon: <TrashIcon size={15} />, danger: true },
+        ]}
+      />
+    </div>
+  ),
+};
+
+// ─── All Variants ─────────────────────────────────────────────────────────────
 
 export const AllVariants: Story = {
   render: () => (
@@ -100,10 +230,10 @@ export const AllVariants: Story = {
             </button>
           }
           items={[
-            { key: 'profile',  label: 'Profile',      icon: <UserIcon size={15} /> },
-            { key: 'settings', label: 'Settings',     icon: <PencilSimpleIcon size={15} /> },
+            { key: 'profile',  label: 'Profile',  icon: <UserIcon size={15} /> },
+            { key: 'settings', label: 'Settings', icon: <PencilSimpleIcon size={15} /> },
             { key: 'sep',      type: 'separator' },
-            { key: 'signout',  label: 'Sign out',     icon: <SignOutIcon size={15} />, danger: true },
+            { key: 'signout',  label: 'Sign out', icon: <SignOutIcon size={15} />, danger: true },
           ]}
         />
       </div>
@@ -115,10 +245,10 @@ export const AllVariants: Story = {
           trigger={<Button variant="secondary" size="sm">Actions <CaretDownIcon size={12} /></Button>}
           items={[
             { key: 'edit',    label: 'Edit vendor',  icon: <PencilSimpleIcon size={15} /> },
-            { key: 'approve', label: 'Approve',      icon: <ArchiveIcon size={15} />, disabled: true },
+            { key: 'approve', label: 'Approve',       icon: <ArchiveIcon size={15} />, disabled: true },
             { key: 'export',  label: 'Export report', icon: <DownloadSimpleIcon size={15} />, disabled: true },
             { key: 'sep',     type: 'separator' },
-            { key: 'delete',  label: 'Delete',       icon: <TrashIcon size={15} />, danger: true },
+            { key: 'delete',  label: 'Delete',        icon: <TrashIcon size={15} />, danger: true },
           ]}
         />
       </div>

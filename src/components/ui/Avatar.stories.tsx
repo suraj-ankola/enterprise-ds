@@ -1,9 +1,45 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { Avatar, AvatarGroup } from './Avatar';
 
 const meta: Meta<typeof Avatar> = {
   title: 'Layout/Avatar',
   component: Avatar,
+  tags: ['autodocs'],
+  argTypes: {
+    size: {
+      control: 'select',
+      options: ['xs', 'sm', 'md', 'lg', 'xl'],
+      description: 'Avatar size on the 8pt grid',
+    },
+    shape: {
+      control: 'select',
+      options: ['circle', 'square'],
+      description: 'Border radius — circle (rounded-full) or square (rounded-lg)',
+    },
+    status: {
+      control: 'select',
+      options: ['online', 'offline', 'away', 'busy'],
+      description: 'Presence indicator dot rendered at bottom-right',
+    },
+    initials: {
+      control: 'text',
+      description: 'Up to 2-character text fallback when no image is provided',
+    },
+    src: {
+      control: 'text',
+      description: 'Image URL — takes priority over initials and icon fallback',
+    },
+    alt: {
+      control: 'text',
+      description: 'Alt text for the image',
+    },
+  },
+  args: {
+    initials: 'SN',
+    size:     'md',
+    shape:    'circle',
+  },
   parameters: {
     docs: {
       description: {
@@ -15,27 +51,76 @@ const meta: Meta<typeof Avatar> = {
 export default meta;
 type Story = StoryObj<typeof Avatar>;
 
-// ─── Playground ───────────────────────────────────────────────────────────────
+// ─── Default ──────────────────────────────────────────────────────────────────
 
-export const Playground: Story = {
-  render: () => (
-    <div className="flex items-end gap-4 flex-wrap">
-      <Avatar size="xs" initials="SN" />
-      <Avatar size="sm" initials="SN" />
-      <Avatar size="md" initials="SN" />
-      <Avatar size="lg" initials="SN" />
-      <Avatar size="xl" initials="SN" />
-    </div>
-  ),
+export const Default: Story = {};
+
+// ─── Fallback states ──────────────────────────────────────────────────────────
+
+export const WithInitials: Story = {
+  args: { initials: 'SN', size: 'md' },
 };
 
-// ─── All Variants ─────────────────────────────────────────────────────────────
+export const WithIcon: Story = {
+  args: { size: 'md' },
+};
+
+// ─── Sizes ────────────────────────────────────────────────────────────────────
+
+export const ExtraSmall: Story = {
+  args: { size: 'xs', initials: 'SN' },
+};
+
+export const Small: Story = {
+  args: { size: 'sm', initials: 'SN' },
+};
+
+export const Medium: Story = {
+  args: { size: 'md', initials: 'SN' },
+};
+
+export const Large: Story = {
+  args: { size: 'lg', initials: 'SN' },
+};
+
+export const ExtraLarge: Story = {
+  args: { size: 'xl', initials: 'SN' },
+};
+
+// ─── Shapes ───────────────────────────────────────────────────────────────────
+
+export const Circle: Story = {
+  args: { shape: 'circle', initials: 'SN' },
+};
+
+export const Square: Story = {
+  args: { shape: 'square', initials: 'SN' },
+};
+
+// ─── Status indicators ────────────────────────────────────────────────────────
+
+export const StatusOnline: Story = {
+  args: { initials: 'SN', status: 'online' },
+};
+
+export const StatusOffline: Story = {
+  args: { initials: 'SN', status: 'offline' },
+};
+
+export const StatusAway: Story = {
+  args: { initials: 'SN', status: 'away' },
+};
+
+export const StatusBusy: Story = {
+  args: { initials: 'SN', status: 'busy' },
+};
+
+// ─── Showcase stories (render-based) ─────────────────────────────────────────
 
 export const AllVariants: Story = {
   render: () => (
     <div className="flex flex-col gap-8">
 
-      {/* Fallback states */}
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-3">Fallback priority</p>
         <div className="flex items-center gap-4">
@@ -50,7 +135,6 @@ export const AllVariants: Story = {
         </div>
       </div>
 
-      {/* Sizes */}
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-3">Sizes</p>
         <div className="flex items-end gap-4">
@@ -63,7 +147,6 @@ export const AllVariants: Story = {
         </div>
       </div>
 
-      {/* Shape */}
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-3">Shapes</p>
         <div className="flex gap-4">
@@ -78,7 +161,6 @@ export const AllVariants: Story = {
         </div>
       </div>
 
-      {/* Status */}
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-3">Status indicators</p>
         <div className="flex gap-4">
@@ -91,7 +173,6 @@ export const AllVariants: Story = {
         </div>
       </div>
 
-      {/* AvatarGroup */}
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-[var(--ds-text-muted)] mb-3">AvatarGroup</p>
         <div className="flex flex-col gap-4">
@@ -117,6 +198,18 @@ export const AllVariants: Story = {
           </div>
         </div>
       </div>
+    </div>
+  ),
+};
+
+export const Playground: Story = {
+  render: () => (
+    <div className="flex items-end gap-4 flex-wrap">
+      <Avatar size="xs" initials="SN" />
+      <Avatar size="sm" initials="SN" />
+      <Avatar size="md" initials="SN" />
+      <Avatar size="lg" initials="SN" />
+      <Avatar size="xl" initials="SN" />
     </div>
   ),
 };

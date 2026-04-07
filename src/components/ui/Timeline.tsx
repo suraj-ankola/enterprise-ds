@@ -1,6 +1,13 @@
 import React from 'react';
 import { Badge } from './Badge';
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function sanitizeHref(href: string): string {
+  if (/^(javascript|data):/i.test(href.trim())) return '#';
+  return href;
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type TimelineItemVariant = 'default' | 'success' | 'warning' | 'danger' | 'info' | 'brand';
@@ -220,7 +227,7 @@ export function ActivityFeed({
         <p className="text-sm font-semibold text-[var(--ds-text-primary)]">{title}</p>
         {(viewAllHref || onViewAll) && (
           <a
-            href={viewAllHref ?? '#'}
+            href={viewAllHref ? sanitizeHref(viewAllHref) : '#'}
             onClick={onViewAll ? (e) => { e.preventDefault(); onViewAll(); } : undefined}
             className="text-xs text-[var(--ds-brand-600)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ds-brand-500)] rounded"
           >

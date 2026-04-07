@@ -9,6 +9,7 @@ import { Badge } from './Badge';
 const meta: Meta<typeof FilterBar> = {
   title: 'Forms/FilterBar',
   component: FilterBar,
+  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {
